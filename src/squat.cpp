@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 #define LOGDIFF(a,b) ((a > b) ? a + log(1.0-exp(b-a)) : b + log(1.0-exp(a-b))) // |a-b| in logscale
 #define LOGADD(a,b) ((a < b) ? b + log(1.0+exp(a-b)) : a + log(1.0+exp(b-a))   // a+b in logscale
-#define LOG2 0.6931471805599452862268 // log(2.0)
+#define LOGTWO 0.6931471805599452862268 // log(2.0)
 #define LOGSMALL -13.81551  // log(1e-6)
 #define MIN_SD 0.01 // minimum SD
 
@@ -41,10 +41,10 @@ double dnorm_qnorm_2pbinom_lt(int x, int n, double p, bool lg, bool pos_only, do
   else if ( lg ) { // log scale
     double logf = R::pbinom(x,n,p,true,true); // log Pr(X<=x)
     if ( pos_only ) { // use f0
-      return R::dnorm4(R::qnorm5(logf+log(1.0-exp(f0-logf))+LOG2-log(1-exp(f0)),0,1,true,true),0,1,true);
+      return R::dnorm4(R::qnorm5(logf+log(1.0-exp(f0-logf))+LOGTWO-log(1-exp(f0)),0,1,true,true),0,1,true);
     }
     else 
-      return R::dnorm4(R::qnorm5(logf+LOG2,0,1,true,true),0,1,true);
+      return R::dnorm4(R::qnorm5(logf+LOGTWO,0,1,true,true),0,1,true);
   }
   else { // linear scale
     if ( pos_only )
@@ -69,10 +69,10 @@ double dnorm_qnorm_2pbinom_ut(int x, int n, double p, bool lg, bool pos_only, do
     return lg ? R_NegInf : 0;
   else if ( lg ) { // log scale
     if ( pos_only ) { // use f0
-      return R::dnorm4(R::qnorm5(R::pbinom(x,n,p,false,true)+LOG2-log(1-exp(f0)),0,1,false,true),0,1,true);
+      return R::dnorm4(R::qnorm5(R::pbinom(x,n,p,false,true)+LOGTWO-log(1-exp(f0)),0,1,false,true),0,1,true);
     }
     else 
-      return R::dnorm4(R::qnorm5(R::pbinom(x,n,p,false,true)+LOG2,0,1,false,true),0,1,true);
+      return R::dnorm4(R::qnorm5(R::pbinom(x,n,p,false,true)+LOGTWO,0,1,false,true),0,1,true);
   }
   else { // linear scale
     if ( pos_only )
@@ -114,7 +114,7 @@ double squat_single_binom_unidir(int x, int n, double p, bool var_adj = true, do
         logd1 = dnorm_qnorm_pbinom(i,n,p,true);
         logdiff = LOGDIFF(logd1,logd0);
         toadd = exp(2*logdiff - logden);   // sum is the variance
-        if ( !isnan(toadd) ) sum += toadd; // to avoid the pbinom bug causing underflow occasionally
+        if ( !std::isnan(toadd) ) sum += toadd; // to avoid the pbinom bug causing underflow occasionally
       }
     }
     else { // approximate variance in linear scale with threshold
@@ -202,21 +202,21 @@ double squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bo
       logden = R::dbinom(median, n, p, true); // log density
       d0 = dnorm_qnorm_2pbinom_lt(median-1,n,p,true,pos_only,logden0); 
       d1 = dnorm_qnorm_2pbinom_ut(median,n,p,true,pos_only,logden0);
-      Ez = (d0 < d1) ? -exp( d1 + log(1.0+exp(d0-d1)) - logden - LOG2 + logpdenom ) : -exp( d0 + log(1.0+exp(d1-d0)) - logden - LOG2 + logpdenom);
+      Ez = (d0 < d1) ? -exp( d1 + log(1.0+exp(d0-d1)) - logden - LOGTWO + logpdenom ) : -exp( d0 + log(1.0+exp(d1-d0)) - logden - LOGTWO + logpdenom);
       sum = (Ez*Ez*exp(logden-logpdenom));
       for(i=median+1; i <= n; ++i) {
         logden = R::dbinom(i, n, p, true); // log density
         d0 = dnorm_qnorm_2pbinom_ut(i-1,n,p,true,pos_only,logden0);
         d1 = dnorm_qnorm_2pbinom_ut(i,n,p,true,pos_only,logden0);
-        Ez = (d0 < d1) ? -exp( d1 + log(1.0-exp(d0-d1)) - logden -LOG2 + logpdenom ) : exp( d0 + log(1.0-exp(d1-d0)) - logden - LOG2 + logpdenom);
-        if ( !isnan(Ez) ) sum += (Ez*Ez*exp(logden-logpdenom)); // avoid occasional pbinom underflow 
+        Ez = (d0 < d1) ? -exp( d1 + log(1.0-exp(d0-d1)) - logden -LOGTWO + logpdenom ) : exp( d0 + log(1.0-exp(d1-d0)) - logden - LOGTWO + logpdenom);
+        if ( !std::isnan(Ez) ) sum += (Ez*Ez*exp(logden-logpdenom)); // avoid occasional pbinom underflow 
       }
       for(i=median-1; i >= pos_only; --i) {
         logden = R::dbinom(i, n, p, true); // log density
         d0 = dnorm_qnorm_2pbinom_lt(i-1,n,p,true,pos_only,logden0);
         d1 = dnorm_qnorm_2pbinom_lt(i,n,p,true,pos_only,logden0);
-        Ez = (d0 < d1) ? exp( d1 + log(1.0-exp(d0-d1)) - logden - LOG2 + logpdenom ) : -exp( d0 + log(1.0-exp(d1-d0)) - logden - LOG2 + logpdenom);
-        if ( !isnan(Ez) ) sum += (Ez*Ez*exp(logden-logpdenom)); // avoid occasional pbinom underflow
+        Ez = (d0 < d1) ? exp( d1 + log(1.0-exp(d0-d1)) - logden - LOGTWO + logpdenom ) : -exp( d0 + log(1.0-exp(d1-d0)) - logden - LOGTWO + logpdenom);
+        if ( !std::isnan(Ez) ) sum += (Ez*Ez*exp(logden-logpdenom)); // avoid occasional pbinom underflow
       }
     }
     else { // perform approximation when calculating variance
@@ -260,22 +260,22 @@ double squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bo
       d0 = dnorm_qnorm_2pbinom_lt(x-1,n,p,true,pos_only,logden0);
       d1 = dnorm_qnorm_2pbinom_ut(x,n,p,true,pos_only,logden0);
       Ez = (d0 < d1) ? 
-            -exp( d1 + log(1.0+exp(d0-d1)) - logden - LOG2 + logpdenom) : 
-            -exp( d0 + log(1.0+exp(d1-d0)) - logden - LOG2+ logpdenom);
+            -exp( d1 + log(1.0+exp(d0-d1)) - logden - LOGTWO + logpdenom) : 
+            -exp( d0 + log(1.0+exp(d1-d0)) - logden - LOGTWO+ logpdenom);
     }    
     else if ( x < median ) {
       d0 = dnorm_qnorm_2pbinom_lt(x-1,n,p,true,pos_only,logden0);
       d1 = dnorm_qnorm_2pbinom_lt(x,n,p,true,pos_only,logden0);
       Ez = (d0 < d1) ? 
-            exp( d1 + log(1.0-exp(d0-d1)) - logden - LOG2 + logpdenom ) : 
-            -exp( d0 + log(1.0-exp(d1-d0)) - logden - LOG2 + logpdenom);
+            exp( d1 + log(1.0-exp(d0-d1)) - logden - LOGTWO + logpdenom ) : 
+            -exp( d0 + log(1.0-exp(d1-d0)) - logden - LOGTWO + logpdenom);
     }
     else {
       d0 = dnorm_qnorm_2pbinom_ut(x-1,n,p,true,pos_only,logden0);
       d1 = dnorm_qnorm_2pbinom_ut(x,n,p,true,pos_only,logden0);
       Ez = (d0 < d1) ? 
-            -exp( d1 + log(1.0-exp(d0-d1)) - logden -LOG2 + logpdenom) : 
-            exp( d0 + log(1.0-exp(d1-d0)) - logden - LOG2 + logpdenom);
+            -exp( d1 + log(1.0-exp(d0-d1)) - logden -LOGTWO + logpdenom) : 
+            exp( d0 + log(1.0-exp(d1-d0)) - logden - LOGTWO + logpdenom);
     }
   }
   else {
