@@ -1,12 +1,15 @@
 Package: squat
-Type: Package
 Title: Sparse Quantile Aggregation Test 
 Version: 1.1
-Date: 2020-06-25
-Author: Jingyue Xi, Yichen Si, Hyun Min Kang
-Maintainer: Hyun Min Kang <hmkang@umich.edu>
-Description: Sparse quantile aggregation test.
+Authors@R: person("Hyun Min", "Kang", email = "hmkang@umich.edu", role = c("aut", "cre"))
+Description: This package contains the Sparse Quantile Aggregation Test (SQuAT).
+Depends: R (>= 3.4.2)
 License: Apache License (>= 2.0)
-Imports: Rcpp (>= 1.0.4)
+Encoding: UTF-8
+LazyData: true
 LinkingTo: Rcpp
-RoxygenNote: 7.1.1
+Imports: Rcpp
+RoxygenNote: 6.0.1
+
+
+
