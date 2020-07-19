@@ -1,6 +1,6 @@
 # SQuAT
 
-The main goalof SQuAT (Sparse Quantile Aggregation Test) is to perform
+The main goal of SQuAT (Sparse Quantile Aggregation Test) is to perform
 robust and powerful meta-analysis of sparse data that can be
 represented as intervals of quantiles.
 
