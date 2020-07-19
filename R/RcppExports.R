@@ -49,7 +49,7 @@ NULL
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
 #' @return A z-score corresponding to the input parameters
 squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e-4) {
-    .Call('_squat_squat_single_binom_unidir', PACKAGE = 'squat', x, n, p, var_adj, approx_under)
+    .Call(`_squat_squat_single_binom_unidir`, x, n, p, var_adj, approx_under)
 }
 
 #' Function to calculate bidirectional z-score for single binomial distribution
@@ -62,7 +62,7 @@ squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
 #' @return A z-score corresponding to the input parameters
 squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
-    .Call('_squat_squat_single_binom_bidir', PACKAGE = 'squat', x, n, p, pos_only, var_adj, approx_under)
+    .Call(`_squat_squat_single_binom_bidir`, x, n, p, pos_only, var_adj, approx_under)
 }
 
 #' A function to generate unidirectional z scores based on exact quantiles from binomial distribution
@@ -74,7 +74,7 @@ squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, a
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
 #' @return A vector of z-scores corresponding to expected aggregated z-scores from SQuAT
 squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under = 1e-4) {
-    .Call('_squat_squat_multi_binom_unidir', PACKAGE = 'squat', xs, sizes, ps, var_adj, approx_under)
+    .Call(`_squat_squat_multi_binom_unidir`, xs, sizes, ps, var_adj, approx_under)
 }
 
 #' A function to generate bidirectional z scores based on exact quantiles from binomial distribution
@@ -87,6 +87,6 @@ squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
 #' @return A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
 squat_multi_binom_bidir <- function(xs, sizes, ps, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
-    .Call('_squat_squat_multi_binom_bidir', PACKAGE = 'squat', xs, sizes, ps, pos_only, var_adj, approx_under)
+    .Call(`_squat_squat_multi_binom_bidir`, xs, sizes, ps, pos_only, var_adj, approx_under)
 }
 
