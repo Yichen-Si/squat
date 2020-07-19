@@ -9,4 +9,4 @@ Description: Sparse quantile aggregation test.
 License: Apache License (>= 2.0)
 Imports: Rcpp (>= 1.0.4)
 LinkingTo: Rcpp
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
