@@ -27,7 +27,7 @@ squat_multi_binom_bidir(
 \item{approx_under}{Perform approximation in variance adjustment for Pr(X=x) smaller than the value}
 }
 \value{
-A vector of z-scores corresponding to expected overdispersion z-scores from squat
+A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
 }
 \description{
 A function to generate bidirectional z scores based on exact quantiles from binomial distribution

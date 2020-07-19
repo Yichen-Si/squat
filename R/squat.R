@@ -1,4 +1,4 @@
-#' squat_binom_overdisp_test : randomized binomial overdispersion test
+#' squat_binom_overdisp_rand : randomized binomial overdispersion test
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts
@@ -9,6 +9,7 @@
 #' @return A (nrep x 2) matrix, containing the following values in each column
 #' * Z-score from randomzied exact meta-analysis
 #' * -log10 p-value corresponding to the z-score
+#' @export
 squat_binom_overdisp_rand <- function(xs, sizes, ps, ws, nrep=1, pos.only=TRUE) {
   if ( pos.only ) {
     iv <- (xs > 0)
@@ -34,7 +35,7 @@ squat_binom_overdisp_rand <- function(xs, sizes, ps, ws, nrep=1, pos.only=TRUE) 
   return(cbind(zs,logps))
 }
 
-#' squat.e.binom.od : expectation-based binomial overdispersion test
+#' squat_binom_overdisp_test : expectation-based binomial overdispersion test
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts
@@ -45,6 +46,7 @@ squat_binom_overdisp_rand <- function(xs, sizes, ps, ws, nrep=1, pos.only=TRUE) 
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
 #' @return z-score from the meta-analysis
+#' @export
 squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE, approx.under = 1e-4, cap.z=10) {
   if ( pos.only ) {
     iv <- (xs > 0)
@@ -70,6 +72,7 @@ squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
 #' @return z-score from the meta-analysis
+#' @export
 squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, approx.under = 1e-4, cap.z = 10) {
   zs <- suppressWarnings(squat_multi_binom_unidir(xs, sizes, ps, adj.var, approx.under))
   zs[zs > cap.z] <- cap.z

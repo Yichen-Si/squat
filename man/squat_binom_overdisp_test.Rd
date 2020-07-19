@@ -2,7 +2,7 @@
 % Please edit documentation in R/squat.R
 \name{squat_binom_overdisp_test}
 \alias{squat_binom_overdisp_test}
-\title{squat.e.binom.od : expectation-based binomial overdispersion test}
+\title{squat_binom_overdisp_test : expectation-based binomial overdispersion test}
 \usage{
 squat_binom_overdisp_test(
   xs,
@@ -36,5 +36,5 @@ squat_binom_overdisp_test(
 z-score from the meta-analysis
 }
 \description{
-squat.e.binom.od : expectation-based binomial overdispersion test
+squat_binom_overdisp_test : expectation-based binomial overdispersion test
 }

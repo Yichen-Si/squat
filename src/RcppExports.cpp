@@ -67,41 +67,12 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// squat_z_bd
-NumericVector squat_z_bd(IntegerVector xs, NumericVector sizes, NumericVector ps);
-RcppExport SEXP _squat_squat_z_bd(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sizes(sizesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type ps(psSEXP);
-    rcpp_result_gen = Rcpp::wrap(squat_z_bd(xs, sizes, ps));
-    return rcpp_result_gen;
-END_RCPP
-}
-// squat_z_bo
-NumericVector squat_z_bo(IntegerVector xs, NumericVector sizes, NumericVector ps, bool posOnly);
-RcppExport SEXP _squat_squat_z_bo(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP posOnlySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sizes(sizesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type ps(psSEXP);
-    Rcpp::traits::input_parameter< bool >::type posOnly(posOnlySEXP);
-    rcpp_result_gen = Rcpp::wrap(squat_z_bo(xs, sizes, ps, posOnly));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_squat_squat_single_binom_unidir", (DL_FUNC) &_squat_squat_single_binom_unidir, 5},
     {"_squat_squat_single_binom_bidir", (DL_FUNC) &_squat_squat_single_binom_bidir, 6},
     {"_squat_squat_multi_binom_unidir", (DL_FUNC) &_squat_squat_multi_binom_unidir, 5},
     {"_squat_squat_multi_binom_bidir", (DL_FUNC) &_squat_squat_multi_binom_bidir, 6},
-    {"_squat_squat_z_bd", (DL_FUNC) &_squat_squat_z_bd, 3},
-    {"_squat_squat_z_bo", (DL_FUNC) &_squat_squat_z_bo, 4},
     {NULL, NULL, 0}
 };
 

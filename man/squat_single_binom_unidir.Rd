@@ -17,6 +17,9 @@ squat_single_binom_unidir(x, n, p, var_adj = TRUE, approx_under = 1e-04)
 
 \item{approx_under}{threshold of binomial density to perform approximation during variance adjustment}
 }
+\value{
+A z-score corresponding to the input parameters
+}
 \description{
 Function to calculate unidirectional z-score for single binomial distribution
 }

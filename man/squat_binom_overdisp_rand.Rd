@@ -2,7 +2,7 @@
 % Please edit documentation in R/squat.R
 \name{squat_binom_overdisp_rand}
 \alias{squat_binom_overdisp_rand}
-\title{squat_binom_overdisp_test : randomized binomial overdispersion test}
+\title{squat_binom_overdisp_rand : randomized binomial overdispersion test}
 \usage{
 squat_binom_overdisp_rand(xs, sizes, ps, ws, nrep = 1, pos.only = TRUE)
 }
@@ -25,5 +25,5 @@ A (nrep x 2) matrix, containing the following values in each column
 * -log10 p-value corresponding to the z-score
 }
 \description{
-squat_binom_overdisp_test : randomized binomial overdispersion test
+squat_binom_overdisp_rand : randomized binomial overdispersion test
 }

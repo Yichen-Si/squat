@@ -2,6 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Internal function to calculate \phi(\Phi^{-1}(F(x)))
+#'
 #' @param x observed count
 #' @param n total number of trials
 #' @param p 0-1 range binomial probability
@@ -10,6 +11,7 @@
 NULL
 
 #' Internal function to calculate \phi(\Phi^{-1}(2*F(x))) or \phi(\Phi^{-1}(2(F(x)-F(0))/(1-F(0))))
+#'
 #' @param x observed count (smaller than median)
 #' @param n total number of trials
 #' @param p 0-1 range binomial probability
@@ -20,6 +22,7 @@ NULL
 NULL
 
 #' Internal function to calculate \phi(\Phi^{-1}(2*F_c(x))) or \phi(\Phi^{-1}(2(F_c(x))/(1-F(0))))
+#'
 #' @param x observed count (greater than median)
 #' @param n total number of trials
 #' @param p 0-1 range binomial probability
@@ -30,6 +33,7 @@ NULL
 NULL
 
 #' Internal function to calculate \phi(\Phi^{-1}(q)
+#'
 #' @param q quantile value
 #' @param lt quantile is lower tail
 #' @param lg log-scale computation
@@ -43,6 +47,7 @@ NULL
 #' @param p            0-1 ranged binomial probability
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+#' @return A z-score corresponding to the input parameters
 squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_single_binom_unidir`, x, n, p, var_adj, approx_under)
 }
@@ -55,6 +60,7 @@ squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e
 #' @param pos_only     ignore zeros if TRUE (x must be positive)
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+#' @return A z-score corresponding to the input parameters
 squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_single_binom_bidir`, x, n, p, pos_only, var_adj, approx_under)
 }
@@ -66,7 +72,7 @@ squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, a
 #' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
 #' @param var_adj Apply variance adjustment to improve power
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
-#' @return A vector of z-scores corresponding to expected overdispersion z-scores from squat
+#' @return A vector of z-scores corresponding to expected aggregated z-scores from SQuAT
 squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_unidir`, xs, sizes, ps, var_adj, approx_under)
 }
@@ -79,29 +85,8 @@ squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under
 #' @param pos_only Ignore zeros in the distribution
 #' @param var_adj Apply variance adjustment to improve power
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
-#' @return A vector of z-scores corresponding to expected overdispersion z-scores from squat
+#' @return A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
 squat_multi_binom_bidir <- function(xs, sizes, ps, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_bidir`, xs, sizes, ps, pos_only, var_adj, approx_under)
-}
-
-#' A function to generate directional z scores based on exact quantiles from binomial distribution
-#' 
-#' @param xs A integer vector containing the list of observed counts. Must be positive if posOnly = TRUE.
-#' @param sizes A integer vector containg the list of total counts. Must be the same length with xs
-#' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps
-#' @return A vector of z-scores corresponding to expected overdispersion z-scores from squat
-squat_z_bd <- function(xs, sizes, ps) {
-    .Call(`_squat_squat_z_bd`, xs, sizes, ps)
-}
-
-#' A function to generate overdispersion z scores based on exact quantiles from binomial distribution
-#' 
-#' @param xs A integer vector containing the list of observed counts. Must be positive if posOnly = TRUE.
-#' @param sizes A integer vector containg the list of total counts. Must be the same length with xs
-#' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps
-#' @param posOnly Ignore zero observations and only consider positive values. All values of xs must be positive.
-#' @return A vector of z-scores corresponding to expected overdispersion z-scores from squat
-squat_z_bo <- function(xs, sizes, ps, posOnly) {
-    .Call(`_squat_squat_z_bo`, xs, sizes, ps, posOnly)
 }
 

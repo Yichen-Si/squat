@@ -26,6 +26,9 @@ squat_single_binom_bidir(
 
 \item{approx_under}{threshold of binomial density to perform approximation during variance adjustment}
 }
+\value{
+A z-score corresponding to the input parameters
+}
 \description{
 Function to calculate bidirectional z-score for single binomial distribution
 }
