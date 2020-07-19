@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include <cmath>
+//#include <cmath>
 using namespace Rcpp;
 
 #define LOGDIFF(a,b) ((a > b) ? a + log(1.0-exp(b-a)) : b + log(1.0-exp(a-b))) // |a-b| in logscale
