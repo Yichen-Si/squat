@@ -82,7 +82,7 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
 }
 
 
-#' squat_binom_directional_test : expectation-based binomial directional test using Gamma approximation
+#' squat_binom_directional_test_g : expectation-based binomial directional test using Gamma approximation
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param ys A vector of 0/1 (or -1/1) representing the direction of test
@@ -91,7 +91,7 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
 #' @param adj.var Adjust variance to improved power
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
-#' @return log p value
+#' @return -log10(p value)
 #' @export
 squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, approx.under = 1e-4, cap.z = 10) {
   res <- suppressWarnings(squat_multi_binom_unidir_g(xs, sizes, ps, adj.var, approx.under))
