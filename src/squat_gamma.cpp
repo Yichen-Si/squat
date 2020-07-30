@@ -92,7 +92,8 @@ double expt_truncated_bidir_gamma_from_qt( double ql, double qu, double alpha, d
 //' @return A z-score and its standard deviation
 // [[Rcpp::export]]
 NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, double beta, 
-                                          bool var_adj = true, double approx_under = 1e-4) {
+                                          bool var_adj = true, 
+                                          double approx_under = 1e-4, bool lower = true) {
   double sd = 1.0;  // without variance adjustment, assume unit variance
   double mu = n*p;
   if ( var_adj ) {  // when variance adjustment is enabled, calculate new variance
@@ -132,7 +133,7 @@ NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, 
           (alpha*alpha/beta/beta) * R::pgamma(f0,alpha,1/beta,false,false);
       }
       f0 = fnp; // f1=F(x=np)
-      gf1= gfnp;    
+      gf1= gfnp;
       for(i=np; i >= 0; --i) { // add lower-tail exact probabilities
         den = R::dbinom(i, n, p, false); // f(x)=Pr(x=i)
         f0 = f0 - den; // f0=F(x-1)=F(x)-f(x)
@@ -151,20 +152,30 @@ NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, 
           (2*alpha*alpha/beta/beta) * R::pgamma(f0,alpha+1,1/beta,true,false) + 
           (alpha*alpha/beta/beta) * R::pgamma(f0,alpha,1/beta,true,false);
       }
-    }    
+    }
     sd = std::sqrt(sum); // update the adjusted variance
   }
   // calculate E[z|x]
-  double logp1 = R::pbinom(x,n,p,1,1);
-  double logp0 = R::pbinom(x-1,n,p,1,1);
-  double Ez = expt_truncated_gamma_from_qt(logp1, logp0, alpha, beta, 1, 1);  
+  double logp1 = R::pbinom(x,n,p,lower,1);
+  double logp0 = R::pbinom(x-1,n,p,lower,1);
+  double Ez = expt_truncated_gamma_from_qt(logp1, logp0, alpha, beta, 1, lower);  
   return NumericVector::create(Ez, sd);
 }
 
-
+//' Function to calculate overdispersion z-score for single binomial distribution using Gamma approximation
+//' 
+//' @param x            observed count
+//' @param n            total number of trials
+//' @param p            0-1 ranged binomial probability
+//' @param alpha        shape parameter of the Gamma distribution 
+//' @param beta         rate parameter of the Gamma distribution 
+//' @param var_adj      perform variance adjustment if TRUE
+//' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+//' @return A z-score and its standard deviation
 // [[Rcpp::export]]
 NumericVector squat_single_binom_bidir_g(int x, int n, double p, double alpha, double beta, 
-                                         bool var_adj = true, double approx_under = 1e-4) {
+                                         bool var_adj = true, 
+                                         double approx_under = 1e-4) {
   double sd = 1.0;  // without variance adjustment, assume unit variance
   double mu = n*p;
   if ( var_adj ) {  // when variance adjustment is enabled, calculate new variance
@@ -238,7 +249,7 @@ NumericVector squat_single_binom_bidir_g(int x, int n, double p, double alpha, d
   // calculate E[z|x]
   double logp1 = R::pbinom(x,n,p,1,1);
   double logp0 = R::pbinom(x-1,n,p,1,1);
-  double Ez = expt_truncated_bidir_gamma_from_qt( logp0, logp1, alpha, beta, 1, 1);  
+  double Ez = expt_truncated_bidir_gamma_from_qt(logp1, logp0, alpha, beta, 1, 1);  
   return NumericVector::create(Ez, sd);
 }
 
@@ -303,6 +314,85 @@ List squat_multi_binom_unidir_g(IntegerVector xs, NumericVector sizes, NumericVe
     v_z += res[1]*res[1];
   }
   
+  return Rcpp::List::create(Rcpp::Named("zs") = zs,
+                            Rcpp::Named("mean") = alpha_sum / beta,
+                            Rcpp::Named("variance") =  v_z);
+}
+
+
+
+//' A function to generate two sample directional z scores based on exact quantiles from binomial distribution
+//' 
+//' @param xs A integer vector containing the list of observed counts. 
+//' @param sizes A integer vector containg the list of total counts. Must be the same length with xs or a constant
+//' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
+//' @param ys A binary vector indicating two groups.
+//' @param var_adj Apply variance adjustment to improve power
+//' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
+//' @return A list including z-scores and its two moments 
+// [[Rcpp::export]]
+List squat_multi_binom_dir_g(IntegerVector xs, NumericVector sizes, NumericVector ps, 
+                             NumericVector ys, bool var_adj = true, double approx_under = 1e-4) {
+  int n = xs.size(); // n is the length of array
+  if ( ( sizes.size() != n ) && ( sizes.size() != 1 ) )
+    stop("sizes must have same length to xs, or length of 1");
+  if ( ( ps.size() != n ) && ( ps.size() != 1 ) )
+    stop("ps must have same length to xs, or length of 1");
+  if ( ys.size() != n )
+    stop("ys must have same length to xs");  
+  int group_count = 0;
+  for (int i=1; i<n; ++i) {
+    if (ys[i] == 1) {
+      group_count++;
+    } else {
+      ys[i] = 0;
+    }
+  }
+  
+  double beta = 0.0, alpha_sum = 0.0;
+  NumericVector alpha(n);
+  if (ps.size() == 1) {
+    beta = 1./(1.-ps[0]);
+    if (sizes.size() == 1) {
+      for (int i=0; i<n; i++) {
+        alpha[i] = sizes[0]*ps[0]*beta;
+      }
+      alpha_sum = n * alpha[0];
+    } else {
+      for (int i=0; i<n; i++) {
+        alpha[i] = sizes[i]*ps[0]*beta;
+        alpha_sum += alpha[i];
+      }
+    }    
+  } else {
+    for (int i=0; i<n; i++) {
+      beta += 1./(1.-ps[i]);
+    }
+    beta /= n;
+    if (sizes.size() == 1) {
+      for (int i=0; i<n; i++) {
+        alpha[i] = sizes[0]*ps[i]*beta;
+        alpha_sum += alpha[i];
+      }
+    } else {
+      for (int i=0; i<n; i++) {
+        alpha[i] = sizes[i]*ps[i]*beta;
+        alpha_sum += alpha[i];
+      }
+    }
+  }
+  
+  NumericVector zs(n);
+  NumericVector res(2);
+  double v_z = 0.0;
+  for(int i=0; i < n; ++i) {
+    res = squat_single_binom_unidir_g(xs[i], 
+                                      (sizes.size() == 1) ? sizes[0] : sizes[i], 
+                                                                            (ps.size() == 1) ? ps[0] : ps[i], 
+                                                                                                         alpha[i], beta, var_adj, approx_under, (1-ys[i]));
+    zs[i] = res[0];
+    v_z += res[1]*res[1];
+  }
   return Rcpp::List::create(Rcpp::Named("zs") = zs,
                             Rcpp::Named("mean") = alpha_sum / beta,
                             Rcpp::Named("variance") =  v_z);

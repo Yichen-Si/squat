@@ -2,7 +2,7 @@
 % Please edit documentation in R/squat.R
 \name{squat_binom_directional_test_g}
 \alias{squat_binom_directional_test_g}
-\title{squat_binom_directional_test : expectation-based binomial directional test using Gamma approximation}
+\title{squat_binom_directional_test_g : expectation-based binomial directional test using Gamma approximation}
 \usage{
 squat_binom_directional_test_g(
   xs,
@@ -30,8 +30,8 @@ squat_binom_directional_test_g(
 \item{cap.z}{The threshold that an individual z-score can contribute to the test statistics}
 }
 \value{
-log p value
+-log10(p value)
 }
 \description{
-squat_binom_directional_test : expectation-based binomial directional test using Gamma approximation
+squat_binom_directional_test_g : expectation-based binomial directional test using Gamma approximation
 }

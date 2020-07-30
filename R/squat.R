@@ -94,7 +94,7 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
 #' @return -log10(p value)
 #' @export
 squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, approx.under = 1e-4, cap.z = 10) {
-  res <- suppressWarnings(squat_multi_binom_unidir_g(xs, sizes, ps, adj.var, approx.under))
+  res <- suppressWarnings(squat_multi_binom_dir_g(xs, sizes, ps, ys, adj.var, approx.under))
   zs = res$zs
   vz = res$variance
   mu  = res$mean
@@ -102,13 +102,8 @@ squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, appr
   alpha_p = mu*beta_p
   zs[zs > cap.z] <- cap.z
   zs[zs < -cap.z] <- -cap.z
-  ys[ys == 0] <- -1
   logp = - pgamma(sum(zs), shape=alpha_p, rate=beta_p,
                   lower.tail=FALSE,log.p=TRUE)/log(10)      
   return ( logp )
 }
-
-
-
-
 

@@ -120,10 +120,20 @@ expt_truncated_bidir_gamma_from_qt <- function(ql, qu, alpha, beta, lg = 0L, low
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
 #' @return A z-score and its standard deviation
-squat_single_binom_unidir_g <- function(x, n, p, alpha, beta, var_adj = TRUE, approx_under = 1e-4) {
-    .Call(`_squat_squat_single_binom_unidir_g`, x, n, p, alpha, beta, var_adj, approx_under)
+squat_single_binom_unidir_g <- function(x, n, p, alpha, beta, var_adj = TRUE, approx_under = 1e-4, lower = TRUE) {
+    .Call(`_squat_squat_single_binom_unidir_g`, x, n, p, alpha, beta, var_adj, approx_under, lower)
 }
 
+#' Function to calculate overdispersion z-score for single binomial distribution using Gamma approximation
+#' 
+#' @param x            observed count
+#' @param n            total number of trials
+#' @param p            0-1 ranged binomial probability
+#' @param alpha        shape parameter of the Gamma distribution 
+#' @param beta         rate parameter of the Gamma distribution 
+#' @param var_adj      perform variance adjustment if TRUE
+#' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+#' @return A z-score and its standard deviation
 squat_single_binom_bidir_g <- function(x, n, p, alpha, beta, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_single_binom_bidir_g`, x, n, p, alpha, beta, var_adj, approx_under)
 }
@@ -138,5 +148,18 @@ squat_single_binom_bidir_g <- function(x, n, p, alpha, beta, var_adj = TRUE, app
 #' @return A list including z-scores and its two moments 
 squat_multi_binom_unidir_g <- function(xs, sizes, ps, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_unidir_g`, xs, sizes, ps, var_adj, approx_under)
+}
+
+#' A function to generate two sample directional z scores based on exact quantiles from binomial distribution
+#' 
+#' @param xs A integer vector containing the list of observed counts. 
+#' @param sizes A integer vector containg the list of total counts. Must be the same length with xs or a constant
+#' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
+#' @param ys A binary vector indicating two groups.
+#' @param var_adj Apply variance adjustment to improve power
+#' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
+#' @return A list including z-scores and its two moments 
+squat_multi_binom_dir_g <- function(xs, sizes, ps, ys, var_adj = TRUE, approx_under = 1e-4) {
+    .Call(`_squat_squat_multi_binom_dir_g`, xs, sizes, ps, ys, var_adj, approx_under)
 }
 
