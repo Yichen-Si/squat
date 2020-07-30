@@ -18,6 +18,15 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 double expt_truncated_gamma_from_qt(double a, double b, double alpha, double beta, bool lg=0, bool lower=1) {
   double denom;
+  if (!lower) {
+    if (lg) {
+      b = LOGDIFF(b,0); 
+      a = LOGDIFF(a,0); 
+    } else {
+      b = 1-b; 
+      a = 1-a;
+    }
+  }
   if (lg) {
     if ( LOGDIFF(a,b) < LOGSMALL ) {return R::qgamma(a,alpha,1/beta,lower,lg);}
     denom = ( (b>a) ? exp(LOGDIFF(a,b)) : -exp(LOGDIFF(a,b)) );
@@ -27,9 +36,6 @@ double expt_truncated_gamma_from_qt(double a, double b, double alpha, double bet
     } 
     denom = b-a;
   }
-  if (!lower) {
-    denom = - denom;
-  }  
   return alpha/beta * 
     ( R::pgamma(R::qgamma(b,alpha,1/beta,lower,lg),alpha+1,1/beta,1,0) - 
     R::pgamma(R::qgamma(a,alpha,1/beta,lower,lg),alpha+1,1/beta,1,0) ) / denom;  
