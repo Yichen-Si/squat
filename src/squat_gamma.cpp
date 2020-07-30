@@ -27,6 +27,9 @@ double expt_truncated_gamma_from_qt(double a, double b, double alpha, double bet
     } 
     denom = b-a;
   }
+  if (!lower) {
+    denom = - denom;
+  }  
   return alpha/beta * 
     ( R::pgamma(R::qgamma(b,alpha,1/beta,lower,lg),alpha+1,1/beta,1,0) - 
     R::pgamma(R::qgamma(a,alpha,1/beta,lower,lg),alpha+1,1/beta,1,0) ) / denom;  
