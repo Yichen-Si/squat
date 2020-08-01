@@ -117,38 +117,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// squat_single_binom_bidir_g
-NumericVector squat_single_binom_bidir_g(int x, int n, double p, double alpha, double beta, bool var_adj, double approx_under);
-RcppExport SEXP _squat_squat_single_binom_bidir_g(SEXP xSEXP, SEXP nSEXP, SEXP pSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< double >::type p(pSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< bool >::type var_adj(var_adjSEXP);
-    Rcpp::traits::input_parameter< double >::type approx_under(approx_underSEXP);
-    rcpp_result_gen = Rcpp::wrap(squat_single_binom_bidir_g(x, n, p, alpha, beta, var_adj, approx_under));
-    return rcpp_result_gen;
-END_RCPP
-}
-// squat_multi_binom_unidir_g
-List squat_multi_binom_unidir_g(IntegerVector xs, NumericVector sizes, NumericVector ps, bool var_adj, double approx_under);
-RcppExport SEXP _squat_squat_multi_binom_unidir_g(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sizes(sizesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type ps(psSEXP);
-    Rcpp::traits::input_parameter< bool >::type var_adj(var_adjSEXP);
-    Rcpp::traits::input_parameter< double >::type approx_under(approx_underSEXP);
-    rcpp_result_gen = Rcpp::wrap(squat_multi_binom_unidir_g(xs, sizes, ps, var_adj, approx_under));
-    return rcpp_result_gen;
-END_RCPP
-}
 // squat_multi_binom_dir_g
 List squat_multi_binom_dir_g(IntegerVector xs, NumericVector sizes, NumericVector ps, NumericVector ys, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_multi_binom_dir_g(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP ysSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
@@ -174,8 +142,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_squat_expt_truncated_gamma_from_qt", (DL_FUNC) &_squat_expt_truncated_gamma_from_qt, 6},
     {"_squat_expt_truncated_bidir_gamma_from_qt", (DL_FUNC) &_squat_expt_truncated_bidir_gamma_from_qt, 6},
     {"_squat_squat_single_binom_unidir_g", (DL_FUNC) &_squat_squat_single_binom_unidir_g, 8},
-    {"_squat_squat_single_binom_bidir_g", (DL_FUNC) &_squat_squat_single_binom_bidir_g, 7},
-    {"_squat_squat_multi_binom_unidir_g", (DL_FUNC) &_squat_squat_multi_binom_unidir_g, 5},
     {"_squat_squat_multi_binom_dir_g", (DL_FUNC) &_squat_squat_multi_binom_dir_g, 6},
     {NULL, NULL, 0}
 };
