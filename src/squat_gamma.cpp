@@ -138,6 +138,7 @@ NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, 
       for(i=np+1; i <= n; ++i) { // add upper-tail exact propobabilities
         den = R::dbinom(i, n, p, false); // f(x)=Pr(x=i)
         f0 = f0 + den; 
+        if (f0 > 1) {f0 = 1-1e-8;}
         gf1 = R::pgamma(R::qgamma(f0,alpha,1/beta,true,false),alpha+1,1/beta,1,0);
         ez = alpha / beta * (gf1 - gf0) / den;
         gf0 = gf1;
@@ -155,9 +156,7 @@ NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, 
       for(i=np; i >= 0; --i) { // add lower-tail exact probabilities
         den = R::dbinom(i, n, p, false); // f(x)=Pr(x=i)
         f0 = f0 - den; // f0=F(x-1)=F(x)-f(x)
-        if (f0 < 1e-8) {
-          f0 = 0.0;
-        }
+        if (f0 < 1e-8) {f0 = 0.0;}
         gf0= R::pgamma(R::qgamma(f0,alpha,1/beta,true,false),alpha+1,1/beta,1,0);
         ez = alpha / beta * (gf1 - gf0) / den;
         gf1 = gf0;
