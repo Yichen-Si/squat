@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{expt_truncated_gamma_from_qt}
 \alias{expt_truncated_gamma_from_qt}
-\title{Calculate expectation from truncated Gamma}
+\title{expt_truncated_gamma_from_qt}
 \usage{
 expt_truncated_gamma_from_qt(a, b, alpha, beta, lg = 0L, lower = 1L)
 }

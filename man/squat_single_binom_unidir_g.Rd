@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{squat_single_binom_unidir_g}
 \alias{squat_single_binom_unidir_g}
-\title{Function to calculate unidirectional z-score for single binomial distribution using Gamma approximation}
+\title{squat_single_binom_unidir_g}
 \usage{
 squat_single_binom_unidir_g(
   x,

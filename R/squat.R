@@ -93,15 +93,23 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
 #' @return -log10(p value)
 #' @export
-squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, approx.under = 1e-4, cap.z = 10) {
+squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, approx.under = 1e-4) {
+  if (length(ps) == 1) {
+    ps = rep(ps, length(xs))
+  }
+  if (length(sizes) == 1) {
+    sizes = rep(sizes, length(xs))
+  }
+  indx = (ps > 0.5)
+  xs[indx] = sizes[indx] - xs[indx]
+  ps[indx] = 1 - ps[indx]
+  ys[indx] = 1 - ys[indx]
   res <- suppressWarnings(squat_multi_binom_dir_g(xs, sizes, ps, ys, adj.var, approx.under))
   zs = res$zs
   vz = res$variance
   mu  = res$mean
   beta_p  = mu / vz
   alpha_p = mu*beta_p
-  zs[zs > cap.z] <- cap.z
-  zs[zs < -cap.z] <- -cap.z
   logp = - pgamma(sum(zs), shape=alpha_p, rate=beta_p,
                   lower.tail=FALSE,log.p=TRUE)/log(10)      
   return ( logp )

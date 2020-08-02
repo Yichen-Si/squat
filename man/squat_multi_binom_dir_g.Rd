@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{squat_multi_binom_dir_g}
 \alias{squat_multi_binom_dir_g}
-\title{A function to generate two sample directional z scores based on exact quantiles from binomial distribution}
+\title{squat_multi_binom_dir_g}
 \usage{
 squat_multi_binom_dir_g(
   xs,

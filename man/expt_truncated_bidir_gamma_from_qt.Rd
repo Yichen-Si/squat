@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{expt_truncated_bidir_gamma_from_qt}
 \alias{expt_truncated_bidir_gamma_from_qt}
-\title{Calculate expectation from truncated Gamma}
+\title{expt_truncated_bidir_gamma_from_qt}
 \usage{
 expt_truncated_bidir_gamma_from_qt(ql, qu, alpha, beta, lg = 0L, lower = 1L)
 }
@@ -17,5 +17,5 @@ expt_truncated_bidir_gamma_from_qt(ql, qu, alpha, beta, lg = 0L, lower = 1L)
 A single expected z-score for overdispersion test
 }
 \description{
-Calculate expectation from truncated Gamma
+Calculate expectation from truncated Gamma - folded
 }
