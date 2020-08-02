@@ -40,19 +40,17 @@ NULL
 #' @return \phi(\Phi^{-1}(q)
 NULL
 
-#' Function to calculate unidirectional z-score for single binomial distribution
+#' Internal Function to calculate unidirectional z-score for single binomial distribution
 #' 
 #' @param x            observed count
 #' @param n            total number of trials
 #' @param p            0-1 ranged binomial probability
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
-#' @return A z-score corresponding to the input parameters
-squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e-4) {
-    .Call(`_squat_squat_single_binom_unidir`, x, n, p, var_adj, approx_under)
-}
+#' @return A pair of (z-score,stdev) corresponding to the input parameters
+NULL
 
-#' Function to calculate bidirectional z-score for single binomial distribution
+#' Internal Function to calculate bidirectional z-score for single binomial distribution
 #' 
 #' @param x            observed count
 #' @param n            total number of trials
@@ -60,7 +58,30 @@ squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e
 #' @param pos_only     ignore zeros if TRUE (x must be positive)
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
-#' @return A z-score corresponding to the input parameters
+#' @return A pair of (z-score,stdev) corresponding to the input parameters
+NULL
+
+#' Function to calculate unidirectional z-score for single binomial distribution
+#' 
+#' @param x            observed count
+#' @param n            total number of trials
+#' @param p            0-1 ranged binomial probability
+#' @param var_adj      perform variance adjustment if TRUE
+#' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+#' @return A named NumericVector containing z-score (z) and stdard deviation (sd)
+squat_single_binom_unidir <- function(x, n, p, var_adj = TRUE, approx_under = 1e-4) {
+    .Call(`_squat_squat_single_binom_unidir`, x, n, p, var_adj, approx_under)
+}
+
+#' Internal Function to calculate bidirectional z-score for single binomial distribution
+#' 
+#' @param x            observed count
+#' @param n            total number of trials
+#' @param p            0-1 ranged binomial probability
+#' @param pos_only     ignore zeros if TRUE (x must be positive)
+#' @param var_adj      perform variance adjustment if TRUE
+#' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+#' @return A named NumericVector containing z-score (z) and stdard deviation (sd)
 squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_single_binom_bidir`, x, n, p, pos_only, var_adj, approx_under)
 }
@@ -72,7 +93,9 @@ squat_single_binom_bidir <- function(x, n, p, pos_only = TRUE, var_adj = TRUE, a
 #' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
 #' @param var_adj Apply variance adjustment to improve power
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
-#' @return A vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+#' @return A DataFrame containing the following attributes
+#'    * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+#'    * sds : standard deviation of the expected z-scores (should be smaller than 1)
 squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_unidir`, xs, sizes, ps, var_adj, approx_under)
 }
@@ -86,6 +109,8 @@ squat_multi_binom_unidir <- function(xs, sizes, ps, var_adj = TRUE, approx_under
 #' @param var_adj Apply variance adjustment to improve power
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
 #' @return A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
+#'    * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+#'    * sds : standard deviation of the expected z-scores (should be smaller than 1)
 squat_multi_binom_bidir <- function(xs, sizes, ps, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_bidir`, xs, sizes, ps, pos_only, var_adj, approx_under)
 }

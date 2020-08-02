@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // squat_single_binom_unidir
-double squat_single_binom_unidir(int x, int n, double p, bool var_adj, double approx_under);
+NumericVector squat_single_binom_unidir(int x, int n, double p, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_single_binom_unidir(SEXP xSEXP, SEXP nSEXP, SEXP pSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -21,7 +21,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // squat_single_binom_bidir
-double squat_single_binom_bidir(int x, int n, double p, bool pos_only, bool var_adj, double approx_under);
+NumericVector squat_single_binom_bidir(int x, int n, double p, bool pos_only, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_single_binom_bidir(SEXP xSEXP, SEXP nSEXP, SEXP pSEXP, SEXP pos_onlySEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -37,7 +37,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // squat_multi_binom_unidir
-NumericVector squat_multi_binom_unidir(IntegerVector xs, NumericVector sizes, NumericVector ps, bool var_adj, double approx_under);
+DataFrame squat_multi_binom_unidir(IntegerVector xs, NumericVector sizes, NumericVector ps, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_multi_binom_unidir(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -52,7 +52,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // squat_multi_binom_bidir
-NumericVector squat_multi_binom_bidir(IntegerVector xs, NumericVector sizes, NumericVector ps, bool pos_only, bool var_adj, double approx_under);
+DataFrame squat_multi_binom_bidir(IntegerVector xs, NumericVector sizes, NumericVector ps, bool pos_only, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_multi_binom_bidir(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP pos_onlySEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

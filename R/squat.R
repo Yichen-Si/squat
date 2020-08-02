@@ -45,9 +45,10 @@ squat_binom_overdisp_rand <- function(xs, sizes, ps, ws, nrep=1, pos.only=TRUE) 
 #' @param adj.var Adjust variance to improved power
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
+#' @param var.add When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment
 #' @return z-score from the meta-analysis
 #' @export
-squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE, approx.under = 1e-4, cap.z=10) {
+squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE, approx.under = 1e-4, cap.z=10, var.add=1) {
   if ( pos.only ) {
     iv <- (xs > 0)
     xs <- xs[iv]
@@ -55,10 +56,14 @@ squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=
     ps <- ps[iv]
     ws <- ws[iv]
   }
-  zs <- suppressWarnings(squat_multi_binom_bidir(xs, sizes, ps, pos.only, adj.var, approx.under))
-  zs[zs > cap.z] <- cap.z
-  zs[zs < -cap.z] <- -cap.z
-  return( sum(ws * zs) / sqrt(sum(ws^2)) )
+  if ( adj.var == FALSE ) {
+      var.add <- 0
+  }
+
+  df <- suppressWarnings(squat_multi_binom_bidir(xs, sizes, ps, pos.only, adj.var, approx.under))
+  df$zs[df$zs > cap.z] <- cap.z
+  df$zs[df$zs < -cap.z] <- -cap.z
+  return( sum(ws * df$zs) / sqrt(var.add * mean(ws^2) + sum(df$sds^2 * ws^2)) )
 }
 
 #' squat_binom_directional_test : expectation-based binomial directional test
@@ -71,14 +76,15 @@ squat_binom_overdisp_test <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=
 #' @param adj.var Adjust variance to improved power
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
 #' @param cap.z The threshold that an individual z-score can contribute to the test statistics
-#' @return z-score from the meta-analysis
+#' @param var.add When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment
+#' @return z-score from the Stouffer-style meta-analysis
 #' @export
-squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, approx.under = 1e-4, cap.z = 10) {
-  zs <- suppressWarnings(squat_multi_binom_unidir(xs, sizes, ps, adj.var, approx.under))
-  zs[zs > cap.z] <- cap.z
-  zs[zs < -cap.z] <- -cap.z
+squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, approx.under = 1e-4, cap.z = 10, var.add = 1) {
+  df <- suppressWarnings(squat_multi_binom_unidir(xs, sizes, ps, adj.var, approx.under))
+  df$zs[df$zs > cap.z] <- cap.z
+  df$zs[df$zs < -cap.z] <- -cap.z
   ys[ys == 0] <- -1
-  return ( sum(ws * ys * zs) / sqrt(sum(ws^2)) )
+  return ( sum(ws * ys * zs) / sqrt(var.add * mean(ws^2) + sum(df$sds^2 * ws^2)) )
 }
 
 

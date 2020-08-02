@@ -92,16 +92,15 @@ double dnorm_qnorm(double q, bool lt, bool lg) {
   return R::dnorm4(R::qnorm5(q,0,1,lt,lg),0,1,lg);
 }
 
-//' Function to calculate unidirectional z-score for single binomial distribution
+//' Internal Function to calculate unidirectional z-score for single binomial distribution
 //' 
 //' @param x            observed count
 //' @param n            total number of trials
 //' @param p            0-1 ranged binomial probability
 //' @param var_adj      perform variance adjustment if TRUE
 //' @param approx_under threshold of binomial density to perform approximation during variance adjustment
-//' @return A z-score corresponding to the input parameters
-// [[Rcpp::export]]
-double squat_single_binom_unidir(int x, int n, double p, bool var_adj = true, double approx_under = 1e-4) {
+//' @return A pair of (z-score,stdev) corresponding to the input parameters
+std::pair<double,double> squat_single_binom_unidir_noexport(int x, int n, double p, bool var_adj = true, double approx_under = 1e-4) {
   double sd = 1.0;  // without variance adjustment, assume unit variance
   if ( var_adj ) {  // when variance adjustment is enabled, calculate new variance
     int i;
@@ -171,12 +170,27 @@ double squat_single_binom_unidir(int x, int n, double p, bool var_adj = true, do
     d1 = dnorm_qnorm_pbinom(x,n,p,false);   // d1 = \phi(\Phi^{-1}(F(x)))
     Ez = (d0-d1)/exp(logden); // Ez = (d0-d1)/den calculated in linear scale
   }
-  if ( sd < MIN_SD ) sd = MIN_SD; // prevent sd from becoming zero or too small
-  Ez /= sd;
-  return Ez;
+  //if ( sd < MIN_SD ) sd = MIN_SD; // prevent sd from becoming zero or too small
+  return std::make_pair(Ez, sd);
+  //Ez /= sd;
+  //return Ez;
 }
 
-//' Function to calculate bidirectional z-score for single binomial distribution
+//' Function to calculate unidirectional z-score for single binomial distribution
+//' 
+//' @param x            observed count
+//' @param n            total number of trials
+//' @param p            0-1 ranged binomial probability
+//' @param var_adj      perform variance adjustment if TRUE
+//' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+//' @return A named NumericVector containing z-score (z) and stdard deviation (sd)
+// [[Rcpp::export]]
+NumericVector squat_single_binom_unidir(int x, int n, double p, bool var_adj = true, double approx_under = 1e-4) {
+  std::pair<double,double> z_sd = squat_single_binom_unidir_noexport(x, n, p, var_adj, approx_under);
+  return NumericVector::create(Named("z") = z_sd.first, Named("sd") = z_sd.second);
+}
+
+//' Internal Function to calculate bidirectional z-score for single binomial distribution
 //' 
 //' @param x            observed count
 //' @param n            total number of trials
@@ -184,9 +198,8 @@ double squat_single_binom_unidir(int x, int n, double p, bool var_adj = true, do
 //' @param pos_only     ignore zeros if TRUE (x must be positive)
 //' @param var_adj      perform variance adjustment if TRUE
 //' @param approx_under threshold of binomial density to perform approximation during variance adjustment
-//' @return A z-score corresponding to the input parameters
-// [[Rcpp::export]]
-double squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
+//' @return A pair of (z-score,stdev) corresponding to the input parameters
+std::pair<double,double> squat_single_binom_bidir_noexport(int x, int n, double p, bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
   double sd = 1.0;  // without variance adjustment assume unit variance
   double logden0, den0, pdenom, logpdenom, logden, den, d0, d1, Ez, tmp, sum;
   int median, i;
@@ -295,8 +308,24 @@ double squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bo
       Ez = (d0-d1)/exp(logden)/2*pdenom;
     }
   }
-  if ( sd < MIN_SD ) sd = MIN_SD;
-  return Ez/sd;
+  //if ( sd < MIN_SD ) sd = MIN_SD;
+  return std::make_pair(Ez, sd);
+  //return Ez/sd;
+}
+
+//' Internal Function to calculate bidirectional z-score for single binomial distribution
+//' 
+//' @param x            observed count
+//' @param n            total number of trials
+//' @param p            0-1 ranged binomial probability
+//' @param pos_only     ignore zeros if TRUE (x must be positive)
+//' @param var_adj      perform variance adjustment if TRUE
+//' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+//' @return A named NumericVector containing z-score (z) and stdard deviation (sd)
+// [[Rcpp::export]]
+NumericVector squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
+  std::pair<double,double> z_sd = squat_single_binom_bidir_noexport(x, n, p, var_adj, approx_under);
+  return NumericVector::create(Named("z") = z_sd.first, Named("sd") = z_sd.second);  
 }
 
 //' A function to generate unidirectional z scores based on exact quantiles from binomial distribution
@@ -306,20 +335,26 @@ double squat_single_binom_bidir(int x, int n, double p, bool pos_only = true, bo
 //' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
 //' @param var_adj Apply variance adjustment to improve power
 //' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
-//' @return A vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+//' @return A DataFrame containing the following attributes
+//'    * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+//'    * sds : standard deviation of the expected z-scores (should be smaller than 1)
 // [[Rcpp::export]]
-NumericVector squat_multi_binom_unidir (IntegerVector xs, NumericVector sizes, NumericVector ps, bool var_adj = true, double approx_under = 1e-4) {
+DataFrame squat_multi_binom_unidir (IntegerVector xs, NumericVector sizes, NumericVector ps, bool var_adj = true, double approx_under = 1e-4) {
   int n = xs.size(); // n is the length of array
   if ( ( sizes.size() != n ) && ( sizes.size() != 1 ) )
     stop("sizes must have same length to xs, or length of 1");
   if ( ( ps.size() != n ) && ( ps.size() != 1 ) )
     stop("ps must have same length to xs, or length of 1");
   NumericVector zs(n);
+  NumericVector sds(n);
   for(int i=0; i < n; ++i) {
-    zs[i] = squat_single_binom_unidir(xs[i], (sizes.size() == 1) ? sizes[0] : sizes[i], 
-                                      (ps.size() == 1) ? ps[0] : ps[i], var_adj, approx_under);
+    std::pair<double,double> z_sd = squat_single_binom_unidir_noexport(xs[i], (sizes.size() == 1) ? sizes[0] : sizes[i], 
+							      (ps.size() == 1) ? ps[0] : ps[i], var_adj, approx_under);
+    zs[i] = z_sd.first;
+    sds[i] = z_sd.second;
   }
-  return zs;
+  return DataFrame::create(Named("zs")=zs,Named("sds")=sds);
+  //return zs;
 }
 
 //' A function to generate bidirectional z scores based on exact quantiles from binomial distribution
@@ -331,22 +366,29 @@ NumericVector squat_multi_binom_unidir (IntegerVector xs, NumericVector sizes, N
 //' @param var_adj Apply variance adjustment to improve power
 //' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
 //' @return A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
+//'    * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+//'    * sds : standard deviation of the expected z-scores (should be smaller than 1)
 // [[Rcpp::export]]
-NumericVector squat_multi_binom_bidir (IntegerVector xs, NumericVector sizes, NumericVector ps, bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
+DataFrame squat_multi_binom_bidir (IntegerVector xs, NumericVector sizes, NumericVector ps, bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
   int n = xs.size(); // n is the length of array
   if ( ( sizes.size() != n ) && ( sizes.size() != 1 ) )
     stop("sizes must have same length to xs, or length of 1");
   if ( ( ps.size() != n ) && ( ps.size() != 1 ) )
     stop("ps must have same length to xs, or length of 1");
   NumericVector zs(n);
+  NumericVector sds(n);
   for(int i=0; i < n; ++i) {
     if ( pos_only && ( xs[i] == 0 ) ) {
-      zs[i] = std::numeric_limits<double>::quiet_NaN(); 
+      zs[i] = std::numeric_limits<double>::quiet_NaN();
+      sds[i] = std::numeric_limits<double>::quiet_NaN();       
     }
     else {
-      zs[i] = squat_single_binom_bidir(xs[i], sizes.size() == 1 ? sizes[0] : sizes[i], 
-                                      ps.size() == 1 ? ps[0] : ps[i], pos_only, var_adj, approx_under);
+      std::pair<double,double> z_sd = squat_single_binom_bidir_noexport(xs[i], sizes.size() == 1 ? sizes[0] : sizes[i], 
+							       ps.size() == 1 ? ps[0] : ps[i], pos_only, var_adj, approx_under);
+      zs[i] = z_sd.first;
+      sds[i] = z_sd.second;
     }
   }
-  return zs;
+  return DataFrame::create(Named("zs")=zs,Named("sds")=sds);  
+  //return zs;
 }
