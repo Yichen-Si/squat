@@ -21,8 +21,17 @@ using namespace Rcpp;
 //' @param lower input quantiles are lower tail
 //' @return A single expected z-score for directional test
 // [[Rcpp::export]]
-double expt_truncated_normal_from_qt(double a, double b, double mu=0, double sd=1, bool lg=0, bool lower=1) {
+double expt_truncated_normal_from_qt(double a, double b, 
+                                     double mu=0, double sd=1, 
+                                     bool lg=0, bool lower=1) {
   double denom;
+  if (lg) {
+    a = max(LOGSMALL, a); b = max(LOGSMALL, b);
+    a = min(SMALL, a); b = min(SMALL, b);
+  } else {
+    a = min(1-SMALL,a); b = min(1-SMALL,b);
+    a = max(SMALL,a); b = max(SMALL,b);
+  }
   if (!lower) {
     if (lg) {
       b = LOGDIFF(b,0);
@@ -37,7 +46,9 @@ double expt_truncated_normal_from_qt(double a, double b, double mu=0, double sd=
     if ( LOGDIFF(a,b) < LOGSMALL ) {return R::qnorm(a,mu,sd,lower,lg);}
     denom = ( (b>a) ? exp(LOGDIFF(a,b)) : -exp(LOGDIFF(a,b)) );
   } else {
-    if ( abs(a-b) < 1e-6 ) {return R::qnorm(a,mu,sd,lower,lg);}
+    if ( abs(a-b) < 1e-6 ) {
+      return R::qnorm(a,mu,sd,lower,lg);
+      }
     denom = b-a;
   }
   return mu + sd * (R::dnorm(R::qnorm(a,mu,sd,1,lg),mu,sd,0) -
@@ -57,7 +68,9 @@ double expt_truncated_normal_from_qt(double a, double b, double mu=0, double sd=
 //' @param lower input quantiles are lower tail
 //' @return A single expected z-score for overdispersion test
 // [[Rcpp::export]]
-double expt_truncated_bidir_normal_from_qt( double ql, double qu, double mu=0, double sd=1, bool lg=0, bool lower=1 ) {
+double expt_truncated_bidir_normal_from_qt( double ql, double qu, 
+                                            double mu=0, double sd=1, 
+                                            bool lg=0, bool lower=1 ) {
   double ez;
   if (lg) {
     double ql2 = log(2.)+ql;
@@ -134,14 +147,16 @@ NumericVector multi_bidir_zs_from_qt_n(NumericVector ql, NumericVector qu, bool 
 double bidir_etn_var_from_qt(NumericVector qt, bool lg=0, bool lower=1) {
   int n = qt.size();
   double vz = 0.0;
-  if (qt[n-1] < 0.5 || qt[0] > 0.5) {
-    stop("The exact calculation interval must cover 0.5.");
-  }
-  double z;
-  for (int i = 1; i < n; i++) {
-    double den = lg ? exp(LOGDIFF(qt[i-1],qt[i])) : abs(qt[i-1]-qt[i]);
-    z = expt_truncated_bidir_normal_from_qt( qt[i-1], qt[i], 0, 1, lg, lower);
-    vz += z*z*den;
+  if (n > 1) {
+    if (qt[n-1] < 0.5 || qt[0] > 0.5) {
+      stop("The exact calculation interval must cover 0.5.");
+    }
+    double z;
+    for (int i = 1; i < n; i++) {
+      double den = lg ? exp(LOGDIFF(qt[i-1],qt[i])) : abs(qt[i-1]-qt[i]);
+      z = expt_truncated_bidir_normal_from_qt( qt[i-1], qt[i], 0, 1, lg, lower);
+      vz += z*z*den;
+    }
   }
   double qu0 = qt[n-1];
   double ql0 = qt[0];
