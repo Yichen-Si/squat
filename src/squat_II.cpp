@@ -6,7 +6,7 @@ using namespace Rcpp;
 #define LOGADD(a,b) ((a < b) ? b + log(1.0+exp(a-b)) : a + log(1.0+exp(b-a))   // a+b in logscale
 #define LOGTWO 0.6931471805599452862268 // log(2.0)
 #define LOGSMALL -13.81551  // log(1e-6)
-#define SMALL 1e-6;
+#define SMALL 1e-6
 #define MIN_SD 0.01 // minimum SD
 
 //' @title expt_truncated_normal_from_qt
