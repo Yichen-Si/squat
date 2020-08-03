@@ -26,11 +26,11 @@ double expt_truncated_normal_from_qt(double a, double b,
                                      bool lg=0, bool lower=1) {
   double denom;
   if (lg) {
-    a = max(LOGSMALL, a); b = max(LOGSMALL, b);
-    a = min(SMALL, a); b = min(SMALL, b);
+    a = std::max(LOGSMALL, a); b = std::max(LOGSMALL, b);
+    a = std::min(SMALL, a); b = std::min(SMALL, b);
   } else {
-    a = min(1-SMALL,a); b = min(1-SMALL,b);
-    a = max(SMALL,a); b = max(SMALL,b);
+    a = std::min(1-SMALL,a); b = std::min(1-SMALL,b);
+    a = std::max(SMALL,a); b = std::max(SMALL,b);
   }
   if (!lower) {
     if (lg) {
