@@ -28,6 +28,8 @@ squat_multi_binom_bidir(
 }
 \value{
 A vector of z-scores corresponding to expected overdispersion z-scores from SQuAT
+   * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+   * sds : standard deviation of the expected z-scores (should be smaller than 1)
 }
 \description{
 A function to generate bidirectional z scores based on exact quantiles from binomial distribution

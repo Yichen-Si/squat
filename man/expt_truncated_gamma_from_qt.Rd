@@ -11,6 +11,10 @@ expt_truncated_gamma_from_qt(a, b, alpha, beta, lg = 0L, lower = 1L)
 
 \item{b}{upper quantile}
 
+\item{alpha}{shape parameter of Gamma}
+
+\item{beta}{rate parameter of Gamma}
+
 \item{lg}{compute log-scale}
 }
 \value{

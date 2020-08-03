@@ -44,7 +44,9 @@ binom_overdisp_test_n <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE
 #' @param var.add When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment
 #' @return z-score from the meta-analysis
 #' @export
-betabinom_overdisp_test_n <- function(xs, sizes, probs, ovs, ws, pos.only=TRUE, adj.var=TRUE, approx.under = 1e-4, cap.z=10, var.add=1) {
+betabinom_overdisp_test_n <- function(xs, sizes, probs, ovs, ws, 
+                                      pos.only=TRUE, adj.var=TRUE, 
+                                      approx.under = 1e-4, cap.z=10, var.add=1) {
   if ( pos.only ) {
     iv <- (xs > 0)
     xs <- xs[iv]
@@ -59,7 +61,7 @@ betabinom_overdisp_test_n <- function(xs, sizes, probs, ovs, ws, pos.only=TRUE, 
   n = length(xs)
   fadj = rep(1, n)
   if ( pos.only ) {
-    fadj = 1-dbetabinom(0,sizes,probs,ovs)
+    fadj = 1-dbetabinom(rep(0,n),sizes,probs,ovs)
   }
   qls = (1-pbetabinom(xs,   sizes, probs, ovs))/fadj
   qus = (1-pbetabinom(xs-1, sizes, probs, ovs))/fadj

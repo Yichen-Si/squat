@@ -10,8 +10,7 @@ squat_binom_directional_test_g(
   sizes,
   ps,
   adj.var = TRUE,
-  approx.under = 1e-04,
-  cap.z = 10
+  approx.under = 1e-04
 )
 }
 \arguments{

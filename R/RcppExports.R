@@ -115,14 +115,76 @@ squat_multi_binom_bidir <- function(xs, sizes, ps, pos_only = TRUE, var_adj = TR
     .Call(`_squat_squat_multi_binom_bidir`, xs, sizes, ps, pos_only, var_adj, approx_under)
 }
 
+#' @title expt_truncated_normal_from_qt
+#' @description
+#' Calculate expectation from truncated Normal
+#'
+#' @param a lower quantile
+#' @param b upper quantile
+#' @param mu mean of the Normal
+#' @param sd standard deviation of the Normal
+#' @param lg compute log-scale
+#' @param lower input quantiles are lower tail
+#' @return A single expected z-score for directional test
+expt_truncated_normal_from_qt <- function(a, b, mu = 0, sd = 1, lg = 0L, lower = 1L) {
+    .Call(`_squat_expt_truncated_normal_from_qt`, a, b, mu, sd, lg, lower)
+}
+
+#' @title expt_truncated_bidir_normal_from_qt
+#' @description
+#' Calculate expectation from truncated Normal - folded
+#'
+#' @param ql lower quantile
+#' @param qu upper quantile
+#' @param mu mean of the Normal
+#' @param sd standard deviation of the Normal
+#' @param lg compute log-scale
+#' @param lower input quantiles are lower tail
+#' @return A single expected z-score for overdispersion test
+expt_truncated_bidir_normal_from_qt <- function(ql, qu, mu = 0, sd = 1, lg = 0L, lower = 1L) {
+    .Call(`_squat_expt_truncated_bidir_normal_from_qt`, ql, qu, mu, sd, lg, lower)
+}
+
+#' @title multi_bidir_zs_from_qt_n
+#' @description
+#' A function to generate bi-directional z scores based on input quantiles (from an arbitrary distribution)
+#'
+#' @param ql A vector of lower quantiles
+#' @param ql A vector of upper quantiles
+#' @param lg compute log-scale
+#' @param lower input quantiles are lower tail
+#' @return A vector including z-scores for the input quantile pairs
+multi_bidir_zs_from_qt_n <- function(ql, qu, lg = 0L, lower = 1L) {
+    .Call(`_squat_multi_bidir_zs_from_qt_n`, ql, qu, lg, lower)
+}
+
+#' @title bidir_etn_var_from_qt
+#' @description
+#' A function to generate (approximated) variance for expectation based bi-directional z scores 
+#' given an arbitrary distribution with the majority of mass captured by the input quantiles
+#' 
+#' @param qt A vector of quantiles
+#' @param lg compute log-scale
+#' @param lower input quantiles are lower tail
+#' @return A vector including z-scores for the input quantile pairs
+bidir_etn_var_from_qt <- function(qt, lg = 0L, lower = 1L) {
+    .Call(`_squat_bidir_etn_var_from_qt`, qt, lg, lower)
+}
+
+binom_multi_bidir_n <- function(xs, sizes, ps, pos_only = TRUE, var_adj = TRUE, approx_under = 1e-4) {
+    .Call(`_squat_binom_multi_bidir_n`, xs, sizes, ps, pos_only, var_adj, approx_under)
+}
+
 #' @title expt_truncated_gamma_from_qt
 #' @description
 #' Calculate expectation from truncated Gamma
 #'
-#' @param a lower quantile 
+#' @param a lower quantile
 #' @param b upper quantile
+#' @param alpha shape parameter of Gamma
+#' @param beta rate parameter of Gamma
 #' @param lg compute log-scale
-#' @return A single expected z-score for directional test 
+#' @return A single expected z-score for directional test
 expt_truncated_gamma_from_qt <- function(a, b, alpha, beta, lg = 0L, lower = 1L) {
     .Call(`_squat_expt_truncated_gamma_from_qt`, a, b, alpha, beta, lg, lower)
 }
@@ -131,10 +193,12 @@ expt_truncated_gamma_from_qt <- function(a, b, alpha, beta, lg = 0L, lower = 1L)
 #' @description
 #' Calculate expectation from truncated Gamma - folded
 #'
-#' @param ql lower quantile 
+#' @param ql lower quantile
 #' @param qu upper quantile
+#' @param alpha shape parameter of Gamma
+#' @param beta rate parameter of Gamma
 #' @param lg compute log-scale
-#' @return A single expected z-score for overdispersion test 
+#' @return A single expected z-score for overdispersion test
 expt_truncated_bidir_gamma_from_qt <- function(ql, qu, alpha, beta, lg = 0L, lower = 1L) {
     .Call(`_squat_expt_truncated_bidir_gamma_from_qt`, ql, qu, alpha, beta, lg, lower)
 }
@@ -142,12 +206,12 @@ expt_truncated_bidir_gamma_from_qt <- function(ql, qu, alpha, beta, lg = 0L, low
 #' @title squat_single_binom_unidir_g
 #' @description
 #' Function to calculate unidirectional z-score for single binomial distribution using Gamma approximation
-#' 
+#'
 #' @param x            observed count
 #' @param n            total number of trials
 #' @param p            0-1 ranged binomial probability
-#' @param alpha        shape parameter of the Gamma distribution 
-#' @param beta         rate parameter of the Gamma distribution 
+#' @param alpha        shape parameter of the Gamma distribution
+#' @param beta         rate parameter of the Gamma distribution
 #' @param var_adj      perform variance adjustment if TRUE
 #' @param approx_under threshold of binomial density to perform approximation during variance adjustment
 #' @return A z-score and its standard deviation
@@ -158,14 +222,14 @@ squat_single_binom_unidir_g <- function(x, n, p, alpha, beta, var_adj = TRUE, ap
 #' @title squat_multi_binom_dir_g
 #' @description
 #' A function to generate two sample directional z scores based on exact quantiles from binomial distribution
-#' 
-#' @param xs A integer vector containing the list of observed counts. 
+#'
+#' @param xs A integer vector containing the list of observed counts.
 #' @param sizes A integer vector containg the list of total counts. Must be the same length with xs or a constant
 #' @param ps A numeric vector containing the binomial probability for each observations. Must be the same length with ps or a constant
 #' @param ys A binary vector indicating two groups.
 #' @param var_adj Apply variance adjustment to improve power
 #' @param approx_under Perform approximation in variance adjustment for Pr(X=x) smaller than the value
-#' @return A list including z-scores and its two moments 
+#' @return A list including z-scores and its two moments
 squat_multi_binom_dir_g <- function(xs, sizes, ps, ys, var_adj = TRUE, approx_under = 1e-4) {
     .Call(`_squat_squat_multi_binom_dir_g`, xs, sizes, ps, ys, var_adj, approx_under)
 }

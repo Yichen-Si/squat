@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{squat_single_binom_bidir}
 \alias{squat_single_binom_bidir}
-\title{Function to calculate bidirectional z-score for single binomial distribution}
+\title{Internal Function to calculate bidirectional z-score for single binomial distribution}
 \usage{
 squat_single_binom_bidir(
   x,
@@ -27,8 +27,8 @@ squat_single_binom_bidir(
 \item{approx_under}{threshold of binomial density to perform approximation during variance adjustment}
 }
 \value{
-A z-score corresponding to the input parameters
+A named NumericVector containing z-score (z) and stdard deviation (sd)
 }
 \description{
-Function to calculate bidirectional z-score for single binomial distribution
+Internal Function to calculate bidirectional z-score for single binomial distribution
 }

@@ -1,13 +1,13 @@
 Package: squat
-Title: Sparse Quantile Aggregation Test 
+Title: Sparse Quantile Aggregation Test
 Version: 1.11
-Authors@R: c( person("Jingyue", "Xi", email = "jyxi@umich.edu", role = c("aut")), 
-	      person("Yichen", "Si", email = "ycsi@umich.edu", role = c("aut")), 
+Authors@R: c( person("Jingyue", "Xi", email = "jyxi@umich.edu", role = c("aut")),
+	      person("Yichen", "Si", email = "ycsi@umich.edu", role = c("aut")),
 	      person("Hyun Min", "Kang", email = "hmkang@umich.edu", role = c("aut", "cre")) )
 Description: This package contains the Sparse Quantile Aggregation Test (SQuAT).
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp
-Imports: Rcpp
+Imports: Rcpp, rmutil
 RoxygenNote: 7.1.1

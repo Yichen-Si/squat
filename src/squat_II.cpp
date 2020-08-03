@@ -123,8 +123,10 @@ NumericVector multi_bidir_zs_from_qt_n(NumericVector ql, NumericVector qu, bool 
 
 //' @title bidir_etn_var_from_qt
 //' @description
-//' A function to generate (approximated) variance for expectation based bi-directional z scores given an arbitrary distribution with the majority of mass captured by the input quantiles
-//' @param ql A vector of lower quantiles
+//' A function to generate (approximated) variance for expectation based bi-directional z scores 
+//' given an arbitrary distribution with the majority of mass captured by the input quantiles
+//' 
+//' @param qt A vector of quantiles
 //' @param lg compute log-scale
 //' @param lower input quantiles are lower tail
 //' @return A vector including z-scores for the input quantile pairs

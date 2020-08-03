@@ -12,7 +12,8 @@ squat_binom_directional_test(
   ws,
   adj.var = TRUE,
   approx.under = 1e-04,
-  cap.z = 10
+  cap.z = 10,
+  var.add = 1
 )
 }
 \arguments{
@@ -31,9 +32,11 @@ squat_binom_directional_test(
 \item{approx.under}{Use approximate variance calculation when Pr(X)<value}
 
 \item{cap.z}{The threshold that an individual z-score can contribute to the test statistics}
+
+\item{var.add}{When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment}
 }
 \value{
-z-score from the meta-analysis
+z-score from the Stouffer-style meta-analysis
 }
 \description{
 squat_binom_directional_test : expectation-based binomial directional test

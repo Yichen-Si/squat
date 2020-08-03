@@ -11,6 +11,10 @@ expt_truncated_bidir_gamma_from_qt(ql, qu, alpha, beta, lg = 0L, lower = 1L)
 
 \item{qu}{upper quantile}
 
+\item{alpha}{shape parameter of Gamma}
+
+\item{beta}{rate parameter of Gamma}
+
 \item{lg}{compute log-scale}
 }
 \value{

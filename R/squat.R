@@ -84,7 +84,7 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
   df$zs[df$zs > cap.z] <- cap.z
   df$zs[df$zs < -cap.z] <- -cap.z
   ys[ys == 0] <- -1
-  return ( sum(ws * ys * zs) / sqrt(var.add * mean(ws^2) + sum(df$sds^2 * ws^2)) )
+  return ( sum(ws * ys * df$zs) / sqrt(var.add * mean(ws^2) + sum(df$sds^2 * ws^2)) )
 }
 
 

@@ -18,7 +18,9 @@ squat_multi_binom_unidir(xs, sizes, ps, var_adj = TRUE, approx_under = 1e-04)
 \item{approx_under}{Perform approximation in variance adjustment for Pr(X=x) smaller than the value}
 }
 \value{
-A vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+A DataFrame containing the following attributes
+   * zs : vector of z-scores corresponding to expected aggregated z-scores from SQuAT
+   * sds : standard deviation of the expected z-scores (should be smaller than 1)
 }
 \description{
 A function to generate unidirectional z scores based on exact quantiles from binomial distribution
