@@ -1,5 +1,5 @@
-#' binom_overdisp_test_n
 #' expectation-based binomial overdispersion test
+#' @name binom_overdisp_test_n
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts
@@ -29,8 +29,8 @@ binom_overdisp_test_n <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE
   return( sum(ws * df$zs) / sqrt(var.add * mean(ws^2) + sum(df$variance * ws^2)) )
 }
 
-#' betabinom_overdisp_test_n
 #' expectation-based beta-binomial overdispersion test
+#' @name betabinom_overdisp_test_n
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts

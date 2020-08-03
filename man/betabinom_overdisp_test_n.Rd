@@ -2,8 +2,7 @@
 % Please edit documentation in R/squat_overdisp.R
 \name{betabinom_overdisp_test_n}
 \alias{betabinom_overdisp_test_n}
-\title{betabinom_overdisp_test_n
-expectation-based beta-binomial overdispersion test}
+\title{expectation-based beta-binomial overdispersion test}
 \usage{
 betabinom_overdisp_test_n(
   xs,
@@ -43,6 +42,5 @@ betabinom_overdisp_test_n(
 z-score from the meta-analysis
 }
 \description{
-betabinom_overdisp_test_n
 expectation-based beta-binomial overdispersion test
 }
