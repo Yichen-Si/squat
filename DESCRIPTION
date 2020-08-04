@@ -9,5 +9,5 @@ License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp
-Imports: Rcpp, rmutil
+Imports: Rcpp
 RoxygenNote: 7.1.1

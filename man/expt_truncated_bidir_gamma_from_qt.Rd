@@ -16,6 +16,8 @@ expt_truncated_bidir_gamma_from_qt(ql, qu, alpha, beta, lg = 0L, lower = 1L)
 \item{beta}{rate parameter of Gamma}
 
 \item{lg}{compute log-scale}
+
+\item{lower}{input quantiles are lower tail}
 }
 \value{
 A single expected z-score for overdispersion test

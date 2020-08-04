@@ -16,6 +16,8 @@ expt_truncated_gamma_from_qt(a, b, alpha, beta, lg = 0L, lower = 1L)
 \item{beta}{rate parameter of Gamma}
 
 \item{lg}{compute log-scale}
+
+\item{lower}{use lower tial quantiles}
 }
 \value{
 A single expected z-score for directional test

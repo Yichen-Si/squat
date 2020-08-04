@@ -1,5 +1,4 @@
 #' expectation-based binomial overdispersion test
-#' @name binom_overdisp_test_n
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts
@@ -29,14 +28,16 @@ binom_overdisp_test_n <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE
   return( sum(ws * df$zs) / sqrt(var.add * mean(ws^2) + sum(df$variance * ws^2)) )
 }
 
+
 #' expectation-based beta-binomial overdispersion test
-#' @name betabinom_overdisp_test_n
 #
 #' @param xs A vector of non-negative counts representing observed data
 #' @param sizes A vector of positive values representing total counts
-#' @param probs A vector of binomial probabilities for each observed data
-#' @param obs A vector of beta-binomial overdispersion parameters = (1-rho)/rho = alpha+beta
 #' @param ws A vector of weights for each observed data
+#' @param alphas A non-negative vector of parameters of the beta distribution
+#' @param betas A non-negative vector of parameters of the beta distribution
+#' @param probs (alternative) A vector of binomial probabilities for each observed data
+#' @param rhos (alternative) A vector of beta-binomial overdispersion parameters rho = 1/(alpha+beta+1)
 #' @param pos.only Ignore zero observations
 #' @param adj.var Adjust variance to improved power
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
@@ -44,48 +45,122 @@ binom_overdisp_test_n <- function(xs, sizes, ps, ws, pos.only=TRUE, adj.var=TRUE
 #' @param var.add When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment
 #' @return z-score from the meta-analysis
 #' @export
-betabinom_overdisp_test_n <- function(xs, sizes, probs, ovs, ws, 
+betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NULL,
+                                      probs = NULL, rhos = NULL, 
                                       pos.only=TRUE, adj.var=TRUE, 
                                       approx.under = 1e-4, cap.z=10, var.add=1) {
+  if ( !("extraDistr" %in% loadedNamespaces()) ) {
+    stop("Package extraDistr is not loaded, try to use betabinom_overdisp_test_n instead")
+  }
+  if (is.null(ws) | length(ws)==1) {
+    ws = rep(1, length(xs))
+  }
   if ( pos.only ) {
     iv <- (xs > 0)
     xs <- xs[iv]
     sizes <- sizes[iv]
-    probs <- probs[iv]
-    ovs <- ovs[iv]
+    alphas <- alphas[iv]
+    betas <- betas[iv]
     ws <- ws[iv]
   }
   if ( adj.var == FALSE ) {
     var.add <- 0
   }
   n = length(xs)
-  fadj = rep(1, n)
+  fadj = rep(0, n)
   if ( pos.only ) {
-    fadj = 1-dbetabinom(rep(0,n),sizes,probs,ovs)
+    fadj = pbbinom(rep(0,n),sizes,alphas,betas,0,log.p=1)
   }
-  qls = (1-pbetabinom(xs,   sizes, probs, ovs))/fadj
-  qus = (1-pbetabinom(xs-1, sizes, probs, ovs))/fadj
-  zs = multi_bidir_zs_from_qt_n(qls, qus, 0, 1)
+  if ( is.null(alphas) | is.null(betas) ) {
+    if ( is.null(probs) | is.null(rhos) ) {
+      stop("At least one set of beta binomial parameters, (alpha,beta) or (probs, rho), has to be provided.")
+    }
+    alphas = probs * (1-rhos)/rhos
+    betas  = (1-probs) * (1-rhos)/rhos
+  }
+  
+  qls = pbbinom(xs,   sizes, alphas, betas, 0, 1) - fadj
+  qus = pbbinom(xs-1, sizes, alphas, betas, 0, 1) - fadj
+  zs = multi_bidir_zs_from_qt_n(qls, qus, 1, 1)
+  
+  mids = round(sizes * alphas / (betas + alphas))
   minx = rep(as.integer(pos.only),n)
   maxx = sizes
   if (approx.under > 0) {
-    minx = qbetabinom(approx.under, sizes, probs, ovs);
-    maxx = qbetabinom(1-approx.under, sizes, probs, ovs);
-    minx[minx < pos.only] = pos.only
+    # minx = qbetabinom(approx.under, sizes, probs, ovs);
+    # maxx = qbetabinom(1-approx.under, sizes, probs, ovs);
+    for (i in 1:n) {
+      for (j in (mids[i]+1):n) {
+        if (dbbinom(j,sizes[i],alphas[i],betas[i]) < approx.under) {
+          maxx[i] = j
+          break
+        }
+      }
+      for (j in (mids[i]:0)) {
+        if (dbbinom(j,sizes[i],alphas[i],betas[i]) < approx.under) {
+          minx[i] = j
+          break
+        }
+      }
+    }    
+    # minx[minx < pos.only] = pos.only
   } 
   vs = sapply(1:n, function(i) {
-    if (minx[i] == maxx[i]) {
-      qt = 1-pbetabinom(maxx[i],   sizes[i], probs[i], ovs[i])
-    } else {
-      qt = 1-pbetabinom(maxx[i]:minx[i], sizes[i], probs[i], ovs[i])
-    }
-    qt = qt/fadj[i]
-    if (qt[length(qt)] < 0.5) {
-      qt = c(qt, 1)
+    qt = pbbinom(maxx[i]:minx[i], sizes[i], alphas[i], betas[i], 0, 1)
+    qt = qt - fadj[i]
+    if (qt[length(qt)] < log(0.5) ) {
+      qt = c(qt, 0)
     }    
-    return(bidir_etn_var_from_qt( qt, 0, 1 ))
+    return(bidir_etn_var_from_qt( qt, 1, 1 ))
   })
+  
   zs[zs > cap.z] = cap.z
   zs[zs < 0-cap.z] = 0-cap.z
   return( sum(ws * zs) / sqrt(var.add * mean(ws^2) + sum(vs * ws^2)) )
 }
+
+
+
+#' Expectation-based beta-binomial overdispersion test
+#
+#' @param xs A vector of non-negative counts representing observed data
+#' @param sizes A vector of positive values representing total counts
+#' @param ws A vector of weights for each observed data
+#' @param alphas A non-negative vector of parameters of the beta distribution
+#' @param betas A non-negative vector of parameters of the beta distribution
+#' @param probs (alternative) A vector of binomial probabilities for each observed data
+#' @param rhos (alternative) A vector of beta-binomial overdispersion parameters rho = 1/(alpha+beta+1)
+#' @param pos.only Ignore zero observations
+#' @param adj.var Adjust variance to improved power
+#' @param approx.under Use approximate variance calculation when Pr(X)<value
+#' @param cap.z The threshold that an individual z-score can contribute to the test statistics
+#' @param var.add When adj.var=TRUE, amount of variance to add to the denominator to prevent anti-conservative behavior due to variance adjustment
+#' @return z-score from the meta-analysis
+#' @export
+betabinom_overdisp_test_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NULL,
+                                      probs = NULL, rhos = NULL,
+                                      pos.only=TRUE, adj.var=TRUE,
+                                      approx.under = 1e-4, cap.z=10, var.add=1) {
+  if (is.null(ws) | length(ws)==1) {
+    ws = rep(1, length(xs))
+  }
+  if ( pos.only ) {
+    iv <- (xs > 0)
+    xs <- xs[iv]
+    sizes <- sizes[iv]
+    alphas <- alphas[iv]
+    betas <- betas[iv]
+    ws <- ws[iv]
+  }
+  if ( adj.var == FALSE ) {
+    var.add <- 0
+  }
+  n = length(xs)
+  df <- suppressWarnings(betabinom_multi_bidir_n(xs, sizes, alphas, betas,
+                                                 pos_only=pos.only, var_adj=adj.var,
+                                                 approx_under=approx.under))
+  df$zs[df$zs > cap.z] <- cap.z
+  df$zs[df$zs < -cap.z] <- -cap.z
+  return( sum(ws * df$zs) / sqrt(var.add * mean(ws^2) + sum(df$variance * ws^2)) )
+}
+

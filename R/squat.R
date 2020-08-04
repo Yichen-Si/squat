@@ -96,7 +96,6 @@ squat_binom_directional_test <- function(xs, ys, sizes, ps, ws, adj.var=TRUE, ap
 #' @param ps A vector of binomial probabilities for each observed data
 #' @param adj.var Adjust variance to improved power
 #' @param approx.under Use approximate variance calculation when Pr(X)<value
-#' @param cap.z The threshold that an individual z-score can contribute to the test statistics
 #' @return -log10(p value)
 #' @export
 squat_binom_directional_test_g <- function(xs, ys, sizes, ps, adj.var=TRUE, approx.under = 1e-4) {

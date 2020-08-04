@@ -1,24 +1,17 @@
 #include <Rcpp.h>
-//#include <cmath>
+#include "shared.h"
+// //#include <cmath>
 using namespace Rcpp;
 
-#define LOGDIFF(a,b) ((a > b) ? a + log(1.0-exp(b-a)) : b + log(1.0-exp(a-b))) // |a-b| in logscale
-#define LOGADD(a,b) ((a < b) ? b + log(1.0+exp(a-b)) : a + log(1.0+exp(b-a))   // a+b in logscale
-#define LOGTWO 0.6931471805599452862268 // log(2.0)
-#define LOGSMALL -13.81551  // log(1e-6)
-#define SMALL 1e-6
-#define MIN_SD 0.01 // minimum SD
-
-//' @title expt_truncated_normal_from_qt
-//' @description
+//' Expectation of truncated normal from quantiles
 //' Calculate expectation from truncated Normal
-//'
+//' 
 //' @param a lower quantile
 //' @param b upper quantile
 //' @param mu mean of the Normal
 //' @param sd standard deviation of the Normal
 //' @param lg compute log-scale
-//' @param lower input quantiles are lower tail
+//' @param lower use lower tial quantiles
 //' @return A single expected z-score for directional test
 // [[Rcpp::export]]
 double expt_truncated_normal_from_qt(double a, double b, 
@@ -49,7 +42,7 @@ double expt_truncated_normal_from_qt(double a, double b,
 }
 
 
-//' @title expt_truncated_bidir_normal_from_qt
+//' Expectation of truncated normal from bidirectional quantiles
 //' @description
 //' Calculate expectation from truncated Normal - folded
 //'
@@ -104,12 +97,12 @@ double expt_truncated_bidir_normal_from_qt( double ql, double qu,
 }
 
 
-//' @title multi_bidir_zs_from_qt_n
+//' Compute multiple bi-directional expected z-scores from quantiles 
 //' @description
 //' A function to generate bi-directional z scores based on input quantiles (from an arbitrary distribution)
 //'
 //' @param ql A vector of lower quantiles
-//' @param ql A vector of upper quantiles
+//' @param qu A vector of upper quantiles
 //' @param lg compute log-scale
 //' @param lower input quantiles are lower tail
 //' @return A vector including z-scores for the input quantile pairs
@@ -127,7 +120,8 @@ NumericVector multi_bidir_zs_from_qt_n(NumericVector ql, NumericVector qu, bool 
 }
 
 
-//' @title bidir_etn_var_from_qt
+//' Variance of bi-directional expected z-scores from quantiles
+//' @name bidir_etn_var_from_qt
 //' @description
 //' A function to generate (approximated) variance for expectation based bi-directional z scores 
 //' given an arbitrary distribution with the majority of mass captured by the input quantiles
@@ -141,7 +135,10 @@ double bidir_etn_var_from_qt(NumericVector qt, bool lg=0, bool lower=1) {
   int n = qt.size();
   double vz = 0.0;
   if (n > 1) {
-    if (qt[n-1] < 0.5 || qt[0] > 0.5) {
+    if (lg && (qt[n-1] < log(0.5) || qt[0] > log(0.5)) ) {
+      stop("The exact calculation interval must cover 0.5.");
+    }
+    if (!lg && (qt[n-1] < 0.5 || qt[0] > 0.5) ) {
       stop("The exact calculation interval must cover 0.5.");
     }
     double z;
@@ -171,8 +168,18 @@ double bidir_etn_var_from_qt(NumericVector qt, bool lg=0, bool lower=1) {
 }
 
 
+//' Binomial bi-directional test 
+//' @name binom_multi_bidir_n
+//' 
+//' @param xs A vector of non-negative counts representing observed data
+//' @param sizes A vector of positive values representing total counts
+//' @param ps A non-negative vector of probabilities
+//' @param pos_only Ignore zero observations
+//' @param var_adj Adjust variance to improved power
+//' @param approx_under Use approximate variance calculation when Pr(X)<value
+//' @return A list including z-scores and their variance
 // [[Rcpp::export]]
-List binom_multi_bidir_n(IntegerVector xs, NumericVector sizes, NumericVector ps,
+List binom_multi_bidir_n(IntegerVector xs, IntegerVector sizes, NumericVector ps,
                          bool pos_only = true, bool var_adj = true, double approx_under = 1e-4) {
   int n = xs.size(); // n is the length of array
   if ( sizes.size() != n )
@@ -234,6 +241,98 @@ List binom_multi_bidir_n(IntegerVector xs, NumericVector sizes, NumericVector ps
       }
       if (k >= pos_only) {
         tmp = -R::qnorm5((R::pbinom(k,sizes[i],ps[i],false,false))*2/fadj[i], 0, 1, true, false);
+        if ( tmp > 0 ) vz[i] += (0.25 * R::pchisq(tmp*tmp, 3, false, false));
+        else vz[i] += (0.5 - 0.25 * R::pchisq(tmp*tmp, 3, false, false));
+      }
+    }
+  } else {
+    std::fill(vz.begin(), vz.end(), 1.);
+  }
+  return List::create(Named("zs") = zs,
+                      Named("variance") = vz);
+}
+
+
+
+//' Beta-binomial bi-directional test 
+//' @name betabinom_multi_bidir_n
+//' 
+//' @param xs A vector of non-negative counts representing observed data
+//' @param sizes A vector of positive values representing total counts
+//' @param alphas A non-negative vector of parameters of the beta distribution
+//' @param betas A non-negative vector of parameters of the beta distribution
+//' @param pos_only Ignore zero observations
+//' @param var_adj Adjust variance to improved power
+//' @param approx_under Use approximate variance calculation when Pr(X)<value
+//' @return A list including z-scores and their variance
+// [[Rcpp::export]]
+List betabinom_multi_bidir_n(NumericVector xs, NumericVector sizes,
+                             NumericVector alphas, NumericVector betas,
+                             bool pos_only = true, bool var_adj = true,
+                             double approx_under = 1e-4) {
+  // double log_thres = log(approx_under);
+  int n = xs.size(); // n is the length of array
+  if ( sizes.size() != n )
+    stop("sizes must have same length to xs");
+  if ( alphas.size() != n )
+    stop("alphas must have same length to xs");
+  NumericVector zs(n);
+  NumericVector vz(n);
+  NumericVector fadj(n);
+  NumericVector fadjorg(n);
+  std::fill(fadj.begin(), fadj.end(), 0.);
+  std::fill(fadjorg.begin(), fadjorg.end(), 1.);
+  std::fill(vz.begin(), vz.end(), 0.);
+  if (pos_only) {
+    fadj = cpp_pbbinom(fadj, sizes, alphas, betas, false, true);
+    fadjorg = exp(fadj);
+  }
+  NumericVector qls = cpp_pbbinom(xs,sizes,alphas,betas,0,0);
+  NumericVector qus = qls + cpp_dbbinom(xs,sizes,alphas,betas,0);
+  qls = log(qls / fadjorg);
+  qus = log(qus / fadjorg);
+  zs = multi_bidir_zs_from_qt_n(qls, qus, 1, 1);  
+  
+  double ql, qu;
+  if (var_adj) {
+    int k, minx, maxx;
+    double z, den, qu0, ql0, tmp;
+    for (int i = 0; i < n; i++) {
+      int median = sizes(i) * alphas[i] / (alphas[i] + betas[i]);
+      k = median;
+      den = cpp_dbbinom_one(k,sizes[i],alphas[i],betas[i],false)/fadjorg[i];
+      ql0 = cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],0,1) - fadj[i];
+      qu0 = (k == 0) ? ql0 : cpp_pbbinom_one(k-1,sizes[i],alphas[i],betas[i],0,1) - fadj[i];
+      z = expt_truncated_bidir_normal_from_qt( ql0, qu0, 0, 1, 1, 1);
+      vz[i] += z * z * den;
+      qu = ql0;
+      for (k = median + 1; k <= n; ++k) {
+        den = cpp_dbbinom_one(k,sizes[i],alphas[i],betas[i],false)/fadjorg[i];
+        if (den < approx_under) break;
+        ql = cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],0,1) - fadj[i];
+        z = expt_truncated_bidir_normal_from_qt( ql, qu, 0, 1, 1, 1);
+        vz[i] += z * z * den;
+        qu = ql;
+      }
+      maxx = k;
+      if (k <= sizes[i]) {
+        tmp = -R::qnorm5((cpp_pbbinom_one(k-1,sizes[i],alphas[i],betas[i],false,false))*2/fadjorg[i], 0, 1, true, false);
+        if ( tmp > 0 ) vz[i] += (0.25 * R::pchisq(tmp*tmp, 3, false, false));
+        else vz[i] += (0.5 - 0.25 * R::pchisq(tmp*tmp, 3, false, false));
+      }
+      ql = qu0;
+      for (k = median - 1; k >= pos_only; --k) {
+        den = cpp_dbbinom_one(k,sizes[i],alphas[i],betas[i],false)/fadjorg[i];
+        if (den < approx_under) break;
+          qu = cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],0,1) - fadj[i];
+          z = expt_truncated_bidir_normal_from_qt( ql, qu, 0, 1, 1, 1);
+          vz[i] += z * z * den;
+          ql = qu;
+      }
+      if (k < 0) minx = 0; 
+      else  minx = k;
+      if (k >= pos_only) {
+        tmp = -R::qnorm5((cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],false,false))*2/fadjorg[i], 0, 1, true, false);
         if ( tmp > 0 ) vz[i] += (0.25 * R::pchisq(tmp*tmp, 3, false, false));
         else vz[i] += (0.5 - 0.25 * R::pchisq(tmp*tmp, 3, false, false));
       }

@@ -18,6 +18,7 @@ using namespace Rcpp;
 //' @param alpha shape parameter of Gamma
 //' @param beta rate parameter of Gamma
 //' @param lg compute log-scale
+//' @param lower use lower tial quantiles
 //' @return A single expected z-score for directional test
 // [[Rcpp::export]]
 double expt_truncated_gamma_from_qt(double a, double b, double alpha, double beta, bool lg=0, bool lower=1) {
@@ -56,6 +57,7 @@ double expt_truncated_gamma_from_qt(double a, double b, double alpha, double bet
 //' @param alpha shape parameter of Gamma
 //' @param beta rate parameter of Gamma
 //' @param lg compute log-scale
+//' @param lower input quantiles are lower tail
 //' @return A single expected z-score for overdispersion test
 // [[Rcpp::export]]
 double expt_truncated_bidir_gamma_from_qt( double ql, double qu, double alpha, double beta, bool lg=0, bool lower=1 ) {
@@ -111,6 +113,7 @@ double expt_truncated_bidir_gamma_from_qt( double ql, double qu, double alpha, d
 //' @param beta         rate parameter of the Gamma distribution
 //' @param var_adj      perform variance adjustment if TRUE
 //' @param approx_under threshold of binomial density to perform approximation during variance adjustment
+//' @param lower        use lower tial quantiles
 //' @return A z-score and its standard deviation
 // [[Rcpp::export]]
 NumericVector squat_single_binom_unidir_g(int x, int n, double p, double alpha, double beta,

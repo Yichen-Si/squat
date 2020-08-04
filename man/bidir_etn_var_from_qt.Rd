@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{bidir_etn_var_from_qt}
 \alias{bidir_etn_var_from_qt}
-\title{bidir_etn_var_from_qt}
+\title{Variance of bi-directional expected z-scores from quantiles}
 \usage{
 bidir_etn_var_from_qt(qt, lg = 0L, lower = 1L)
 }

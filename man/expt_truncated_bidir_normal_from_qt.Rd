@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{expt_truncated_bidir_normal_from_qt}
 \alias{expt_truncated_bidir_normal_from_qt}
-\title{expt_truncated_bidir_normal_from_qt}
+\title{Expectation of truncated normal from bidirectional quantiles}
 \usage{
 expt_truncated_bidir_normal_from_qt(
   ql,

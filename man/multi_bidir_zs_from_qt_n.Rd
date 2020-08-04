@@ -2,12 +2,14 @@
 % Please edit documentation in R/RcppExports.R
 \name{multi_bidir_zs_from_qt_n}
 \alias{multi_bidir_zs_from_qt_n}
-\title{multi_bidir_zs_from_qt_n}
+\title{Compute multiple bi-directional expected z-scores from quantiles}
 \usage{
 multi_bidir_zs_from_qt_n(ql, qu, lg = 0L, lower = 1L)
 }
 \arguments{
-\item{ql}{A vector of upper quantiles}
+\item{ql}{A vector of lower quantiles}
+
+\item{qu}{A vector of upper quantiles}
 
 \item{lg}{compute log-scale}
 

@@ -5,6 +5,82 @@
 
 using namespace Rcpp;
 
+// cpp_pbbinom_one
+double cpp_pbbinom_one(double x, double size, double alpha, double beta, bool lower_tail, bool log_prob);
+RcppExport SEXP _squat_cpp_pbbinom_one(SEXP xSEXP, SEXP sizeSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP lower_tailSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< bool >::type lower_tail(lower_tailSEXP);
+    Rcpp::traits::input_parameter< bool >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_pbbinom_one(x, size, alpha, beta, lower_tail, log_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_dbbinom_one
+double cpp_dbbinom_one(double x, double size, double alpha, double beta, bool log_prob);
+RcppExport SEXP _squat_cpp_dbbinom_one(SEXP xSEXP, SEXP sizeSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< bool >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_dbbinom_one(x, size, alpha, beta, log_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_dbbinom
+NumericVector cpp_dbbinom(const NumericVector& x, const NumericVector& size, const NumericVector& alpha, const NumericVector& beta, const bool& log_prob);
+RcppExport SEXP _squat_cpp_dbbinom(SEXP xSEXP, SEXP sizeSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_dbbinom(x, size, alpha, beta, log_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_pbbinom
+NumericVector cpp_pbbinom(const NumericVector& x, const NumericVector& size, const NumericVector& alpha, const NumericVector& beta, const bool& lower_tail, const bool& log_prob);
+RcppExport SEXP _squat_cpp_pbbinom(SEXP xSEXP, SEXP sizeSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP lower_tailSEXP, SEXP log_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type lower_tail(lower_tailSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type log_prob(log_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_pbbinom(x, size, alpha, beta, lower_tail, log_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_rbbinom
+NumericVector cpp_rbbinom(const int& n, const NumericVector& size, const NumericVector& alpha, const NumericVector& beta);
+RcppExport SEXP _squat_cpp_rbbinom(SEXP nSEXP, SEXP sizeSEXP, SEXP alphaSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type size(sizeSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rbbinom(n, size, alpha, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
 // squat_single_binom_unidir
 NumericVector squat_single_binom_unidir(int x, int n, double p, bool var_adj, double approx_under);
 RcppExport SEXP _squat_squat_single_binom_unidir(SEXP xSEXP, SEXP nSEXP, SEXP pSEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
@@ -127,18 +203,35 @@ BEGIN_RCPP
 END_RCPP
 }
 // binom_multi_bidir_n
-List binom_multi_bidir_n(IntegerVector xs, NumericVector sizes, NumericVector ps, bool pos_only, bool var_adj, double approx_under);
+List binom_multi_bidir_n(IntegerVector xs, IntegerVector sizes, NumericVector ps, bool pos_only, bool var_adj, double approx_under);
 RcppExport SEXP _squat_binom_multi_bidir_n(SEXP xsSEXP, SEXP sizesSEXP, SEXP psSEXP, SEXP pos_onlySEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sizes(sizesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type ps(psSEXP);
     Rcpp::traits::input_parameter< bool >::type pos_only(pos_onlySEXP);
     Rcpp::traits::input_parameter< bool >::type var_adj(var_adjSEXP);
     Rcpp::traits::input_parameter< double >::type approx_under(approx_underSEXP);
     rcpp_result_gen = Rcpp::wrap(binom_multi_bidir_n(xs, sizes, ps, pos_only, var_adj, approx_under));
+    return rcpp_result_gen;
+END_RCPP
+}
+// betabinom_multi_bidir_n
+List betabinom_multi_bidir_n(NumericVector xs, NumericVector sizes, NumericVector alphas, NumericVector betas, bool pos_only, bool var_adj, double approx_under);
+RcppExport SEXP _squat_betabinom_multi_bidir_n(SEXP xsSEXP, SEXP sizesSEXP, SEXP alphasSEXP, SEXP betasSEXP, SEXP pos_onlySEXP, SEXP var_adjSEXP, SEXP approx_underSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type alphas(alphasSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type betas(betasSEXP);
+    Rcpp::traits::input_parameter< bool >::type pos_only(pos_onlySEXP);
+    Rcpp::traits::input_parameter< bool >::type var_adj(var_adjSEXP);
+    Rcpp::traits::input_parameter< double >::type approx_under(approx_underSEXP);
+    rcpp_result_gen = Rcpp::wrap(betabinom_multi_bidir_n(xs, sizes, alphas, betas, pos_only, var_adj, approx_under));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -210,6 +303,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_squat_cpp_pbbinom_one", (DL_FUNC) &_squat_cpp_pbbinom_one, 6},
+    {"_squat_cpp_dbbinom_one", (DL_FUNC) &_squat_cpp_dbbinom_one, 5},
+    {"_squat_cpp_dbbinom", (DL_FUNC) &_squat_cpp_dbbinom, 5},
+    {"_squat_cpp_pbbinom", (DL_FUNC) &_squat_cpp_pbbinom, 6},
+    {"_squat_cpp_rbbinom", (DL_FUNC) &_squat_cpp_rbbinom, 4},
     {"_squat_squat_single_binom_unidir", (DL_FUNC) &_squat_squat_single_binom_unidir, 5},
     {"_squat_squat_single_binom_bidir", (DL_FUNC) &_squat_squat_single_binom_bidir, 6},
     {"_squat_squat_multi_binom_unidir", (DL_FUNC) &_squat_squat_multi_binom_unidir, 5},
@@ -219,6 +317,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_squat_multi_bidir_zs_from_qt_n", (DL_FUNC) &_squat_multi_bidir_zs_from_qt_n, 4},
     {"_squat_bidir_etn_var_from_qt", (DL_FUNC) &_squat_bidir_etn_var_from_qt, 3},
     {"_squat_binom_multi_bidir_n", (DL_FUNC) &_squat_binom_multi_bidir_n, 6},
+    {"_squat_betabinom_multi_bidir_n", (DL_FUNC) &_squat_betabinom_multi_bidir_n, 7},
     {"_squat_expt_truncated_gamma_from_qt", (DL_FUNC) &_squat_expt_truncated_gamma_from_qt, 6},
     {"_squat_expt_truncated_bidir_gamma_from_qt", (DL_FUNC) &_squat_expt_truncated_bidir_gamma_from_qt, 6},
     {"_squat_squat_single_binom_unidir_g", (DL_FUNC) &_squat_squat_single_binom_unidir_g, 8},

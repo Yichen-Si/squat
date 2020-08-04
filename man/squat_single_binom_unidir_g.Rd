@@ -29,6 +29,8 @@ squat_single_binom_unidir_g(
 \item{var_adj}{perform variance adjustment if TRUE}
 
 \item{approx_under}{threshold of binomial density to perform approximation during variance adjustment}
+
+\item{lower}{use lower tial quantiles}
 }
 \value{
 A z-score and its standard deviation

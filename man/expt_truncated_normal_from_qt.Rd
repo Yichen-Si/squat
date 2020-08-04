@@ -2,7 +2,8 @@
 % Please edit documentation in R/RcppExports.R
 \name{expt_truncated_normal_from_qt}
 \alias{expt_truncated_normal_from_qt}
-\title{expt_truncated_normal_from_qt}
+\title{Expectation of truncated normal from quantiles
+Calculate expectation from truncated Normal}
 \usage{
 expt_truncated_normal_from_qt(a, b, mu = 0, sd = 1, lg = 0L, lower = 1L)
 }
@@ -17,11 +18,12 @@ expt_truncated_normal_from_qt(a, b, mu = 0, sd = 1, lg = 0L, lower = 1L)
 
 \item{lg}{compute log-scale}
 
-\item{lower}{input quantiles are lower tail}
+\item{lower}{use lower tial quantiles}
 }
 \value{
 A single expected z-score for directional test
 }
 \description{
+Expectation of truncated normal from quantiles
 Calculate expectation from truncated Normal
 }

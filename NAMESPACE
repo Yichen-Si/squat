@@ -1,5 +1,4 @@
 useDynLib(squat, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
-importFrom("stats", "dbinom", "pbinom", "pnorm", "qnorm", "runif")
-importFrom("rmutil", "dbetabinom","rbetabinom", "pbetabinom","qbetabinom")
+importFrom("stats", "dbinom", "pbinom", "pnorm", "qnorm", "runif", "pgamma")

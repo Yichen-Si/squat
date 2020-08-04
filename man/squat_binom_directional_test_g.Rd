@@ -25,8 +25,6 @@ squat_binom_directional_test_g(
 \item{adj.var}{Adjust variance to improved power}
 
 \item{approx.under}{Use approximate variance calculation when Pr(X)<value}
-
-\item{cap.z}{The threshold that an individual z-score can contribute to the test statistics}
 }
 \value{
 -log10(p value)
