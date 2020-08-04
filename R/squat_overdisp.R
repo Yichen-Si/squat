@@ -49,9 +49,6 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
                                       probs = NULL, rhos = NULL, 
                                       pos.only=TRUE, adj.var=TRUE, 
                                       approx.under = 1e-4, cap.z=10, var.add=1) {
-  if ( !("extraDistr" %in% loadedNamespaces()) ) {
-    stop("Package extraDistr is not loaded, try to use betabinom_overdisp_test_n instead")
-  }
   if (is.null(ws) | length(ws)==1) {
     ws = rep(1, length(xs))
   }
@@ -69,7 +66,7 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
   n = length(xs)
   fadj = rep(0, n)
   if ( pos.only ) {
-    fadj = pbbinom(rep(0,n),sizes,alphas,betas,0,log.p=1)
+    fadj = cpp_pbbinom(rep(0,n),sizes,alphas,betas,0,1)
   }
   if ( is.null(alphas) | is.null(betas) ) {
     if ( is.null(probs) | is.null(rhos) ) {
@@ -79,25 +76,23 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
     betas  = (1-probs) * (1-rhos)/rhos
   }
   
-  qls = pbbinom(xs,   sizes, alphas, betas, 0, 1) - fadj
-  qus = pbbinom(xs-1, sizes, alphas, betas, 0, 1) - fadj
+  qls = cpp_pbbinom(xs,   sizes, alphas, betas, 0, 1) - fadj
+  qus = cpp_pbbinom(xs-1, sizes, alphas, betas, 0, 1) - fadj
   zs = multi_bidir_zs_from_qt_n(qls, qus, 1, 1)
   
   mids = round(sizes * alphas / (betas + alphas))
   minx = rep(as.integer(pos.only),n)
   maxx = sizes
   if (approx.under > 0) {
-    # minx = qbetabinom(approx.under, sizes, probs, ovs);
-    # maxx = qbetabinom(1-approx.under, sizes, probs, ovs);
     for (i in 1:n) {
       for (j in (mids[i]+1):n) {
-        if (dbbinom(j,sizes[i],alphas[i],betas[i]) < approx.under) {
+        if (cpp_dbbinom(j,sizes[i],alphas[i],betas[i],0) < approx.under) {
           maxx[i] = j
           break
         }
       }
       for (j in (mids[i]:0)) {
-        if (dbbinom(j,sizes[i],alphas[i],betas[i]) < approx.under) {
+        if (cpp_dbbinom(j,sizes[i],alphas[i],betas[i],0) < approx.under) {
           minx[i] = j
           break
         }
@@ -106,7 +101,7 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
     # minx[minx < pos.only] = pos.only
   } 
   vs = sapply(1:n, function(i) {
-    qt = pbbinom(maxx[i]:minx[i], sizes[i], alphas[i], betas[i], 0, 1)
+    qt = cpp_pbbinom(maxx[i]:minx[i], sizes[i], alphas[i], betas[i], 0, 1)
     qt = qt - fadj[i]
     if (qt[length(qt)] < log(0.5) ) {
       qt = c(qt, 0)
