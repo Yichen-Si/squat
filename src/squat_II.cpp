@@ -298,7 +298,8 @@ List betabinom_multi_bidir_n(NumericVector xs, NumericVector sizes,
     int k, minx, maxx;
     double z, den, qu0, ql0, tmp;
     for (int i = 0; i < n; i++) {
-      int median = sizes(i) * alphas[i] / (alphas[i] + betas[i]);
+      int median = sizes[i] * alphas[i] / (alphas[i] + betas[i]);
+      if (median <= 0) {median=1;}
       k = median;
       den = cpp_dbbinom_one(k,sizes[i],alphas[i],betas[i],false)/fadjorg[i];
       ql0 = cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],0,1) - fadj[i];

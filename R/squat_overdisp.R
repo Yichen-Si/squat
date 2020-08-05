@@ -52,6 +52,13 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
   if (is.null(ws) | length(ws)==1) {
     ws = rep(1, length(xs))
   }
+  if ( is.null(alphas) | is.null(betas) ) {
+    if ( is.null(probs) | is.null(rhos) ) {
+      stop("At least one set of beta binomial parameters, (alpha,beta) or (probs, rho), has to be provided.")
+    }
+    alphas = probs * (1-rhos)/rhos
+    betas  = (1-probs) * (1-rhos)/rhos
+  }  
   if ( pos.only ) {
     iv <- (xs > 0)
     xs <- xs[iv]
@@ -68,14 +75,6 @@ betabinom_overdisp_test_r_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NUL
   if ( pos.only ) {
     fadj = cpp_pbbinom(rep(0,n),sizes,alphas,betas,0,1)
   }
-  if ( is.null(alphas) | is.null(betas) ) {
-    if ( is.null(probs) | is.null(rhos) ) {
-      stop("At least one set of beta binomial parameters, (alpha,beta) or (probs, rho), has to be provided.")
-    }
-    alphas = probs * (1-rhos)/rhos
-    betas  = (1-probs) * (1-rhos)/rhos
-  }
-  
   qls = cpp_pbbinom(xs,   sizes, alphas, betas, 0, 1) - fadj
   qus = cpp_pbbinom(xs-1, sizes, alphas, betas, 0, 1) - fadj
   zs = multi_bidir_zs_from_qt_n(qls, qus, 1, 1)
@@ -139,6 +138,13 @@ betabinom_overdisp_test_n <- function(xs, sizes,ws=NULL,alphas=NULL, betas=NULL,
   if (is.null(ws) | length(ws)==1) {
     ws = rep(1, length(xs))
   }
+  if ( is.null(alphas) | is.null(betas) ) {
+    if ( is.null(probs) | is.null(rhos) ) {
+      stop("At least one set of beta binomial parameters, (alpha,beta) or (probs, rho), has to be provided.")
+    }
+    alphas = probs * (1-rhos)/rhos
+    betas  = (1-probs) * (1-rhos)/rhos
+  }  
   if ( pos.only ) {
     iv <- (xs > 0)
     xs <- xs[iv]
