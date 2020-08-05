@@ -292,6 +292,11 @@ NumericVector cpp_pbbinom(
     }
   }
   
+  for (int i = 0; i < Nmax; i++) {
+    if (p[i] < SMALL) p[i] = SMALL;
+    else if (p[i] > 1 - SMALL) p[i] = 1. - SMALL;   
+  }
+  
   if (!lower_tail)
     p = 1.0 - p;
   
