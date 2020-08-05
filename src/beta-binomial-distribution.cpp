@@ -270,9 +270,9 @@ NumericVector cpp_pbbinom(
       throw_warning = true;
       p[i] = NAN;
     } else if (GETV(x, i) < 0.0) {
-      p[i] = 0.0;
+      p[i] = SMALL;
     } else if (GETV(x, i) >= GETV(size, i)) {
-      p[i] = 1.0;
+      p[i] = 1.0-SMALL;
     } else if (is_large_int(GETV(x, i))) {
       p[i] = NA_REAL;
       Rcpp::warning("NAs introduced by coercion to integer range");
