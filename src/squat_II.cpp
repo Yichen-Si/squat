@@ -333,7 +333,7 @@ List betabinom_multi_bidir_n(NumericVector xs, NumericVector sizes,
       if (k < 0) minx = 0; 
       else  minx = k;
       if (k >= pos_only) {
-        tmp = -R::qnorm5((cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],false,false))*2/fadjorg[i], 0, 1, true, false);
+        tmp = -R::qnorm5((cpp_pbbinom_one(k,sizes[i],alphas[i],betas[i],true,false))*2/fadjorg[i], 0, 1, true, false);
         if ( tmp > 0 ) vz[i] += (0.25 * R::pchisq(tmp*tmp, 3, false, false));
         else vz[i] += (0.5 - 0.25 * R::pchisq(tmp*tmp, 3, false, false));
       }
